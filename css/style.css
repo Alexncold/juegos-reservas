@@ -609,16 +609,19 @@ tbody tr:hover {
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(4px);
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
     z-index: 100;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.2s;
+    padding: 1rem;
 }
 
-.modal-overlay.open {
+.modal-overlay.open,
+.modal-overlay.active {
+    display: flex;
     opacity: 1;
     pointer-events: auto;
 }
@@ -644,6 +647,75 @@ tbody tr:hover {
     font-size: 1.5rem;
     cursor: pointer;
     color: var(--muted-foreground);
+    z-index: 10;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+.modal-close:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Estilos específicos para el modal de Día de Club */
+#freePlayModal .modal-content {
+    max-width: 900px;
+}
+
+#freePlayTablesContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+    width: 100%;
+}
+
+#freePlayTablesContainer .card {
+    background: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+    overflow: hidden;
+}
+
+#freePlayTablesContainer .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+#freePlayTablesContainer .card-content {
+    padding: 1.25rem;
+}
+
+#freePlayTablesContainer .status-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+#freePlayTablesContainer .status-confirmed {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+#freePlayTablesContainer .status-rejected {
+    background-color: #fee2e2;
+    color: #b91c1c;
+}
+
+@media (max-width: 640px) {
+    #freePlayTablesContainer {
+        grid-template-columns: 1fr;
+    }
+    
+    #freePlayModal .modal-content {
+        max-width: 100%;
+        width: 95%;
+    }
 }
 
 /* Admin Calendar */

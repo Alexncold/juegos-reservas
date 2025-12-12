@@ -427,28 +427,40 @@
             }
         }
 
-        /* Estilos para las tarjetas de Día de Club */
-        #freePlayTablesContainer {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1rem;
-            width: 100%;
-            margin-top: 1rem;
+        /* Estilos para el modal de Free Play */
+        #freePlayModal .modal-content {
+            max-width: 900px;
+            width: 95%;
         }
 
+        #freePlayTablesContainer {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+            width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            #freePlayTablesContainer {
+                grid-template-columns: 1fr;
+            }
+            
+            #freePlayModal .modal-content {
+                max-width: 100%;
+                width: 100%;
+                max-height: 90vh;
+                border-radius: 0;
+            }
+        }
+
+        /* Animación para las tarjetas */
         #freePlayTablesContainer .card {
-            background: white;
-            border-radius: 0.75rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            transition: all 0.2s ease;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
         #freePlayTablesContainer .card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
         #freePlayTablesContainer .card-content {
@@ -803,6 +815,50 @@
                     <div id="newsContainer">
                         <!-- JS Injected -->
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Día de Club (FREE PLAY) -->
+        <div id="freePlayModal" class="modal-overlay" style="display: none;">
+            <div class="modal-content" style="max-width: 900px; max-height: 85vh; overflow-y: auto;">
+                <button class="modal-close" id="closeFreePlayModal">&times;</button>
+                <h2 class="text-xl font-bold mb-4">Día de Club - Mesas Disponibles</h2>
+                
+                <p class="text-muted text-sm mb-6">
+                    Seleccioná una mesa para anotarte y jugar gratis. Los cupos son limitados.
+                </p>
+                
+                <!-- Container para las tarjetas de mesas -->
+                <div id="freePlayTablesContainer" style="
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 1rem;
+                    width: 100%;
+                ">
+                    <!-- Las mesas se cargan dinámicamente desde Firebase -->
+                </div>
+                
+                <!-- Estado vacío -->
+                <div id="freePlayEmptyState" style="
+                    display: none;
+                    text-align: center;
+                    padding: 3rem 1rem;
+                ">
+                    <span class="material-symbols-outlined" style="
+                        font-size: 64px;
+                        color: #d1d5db;
+                        margin-bottom: 1rem;
+                    ">casino</span>
+                    <h3 class="font-bold text-lg mb-2">No hay mesas disponibles</h3>
+                    <p class="text-muted text-sm">
+                        Volvé más tarde para ver las nuevas mesas disponibles.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
 
     <!-- Modal de Confirmación de Reserva -->
     <div id="reservationModal" class="modal-overlay" style="display: none;">

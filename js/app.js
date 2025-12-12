@@ -263,42 +263,71 @@ async function initializeApp(user) {
     renderCalendar();
     // note: renderTimeSlots y renderNews se llaman al recibir data del listener
 
-    // Event Listeners (con defensas por si faltan elementos)
-    if (els.logoutBtn) {
-        els.logoutBtn.addEventListener('click', async () => {
-            await FirebaseService.logout();
-            window.location.href = 'login.html';
-        });
-    }
+// Mobile UI updates and real-time listeners are already set up above
 
-    if (els.historyBtn) {
-        els.historyBtn.addEventListener('click', () => {
-            window.location.href = 'history.html';
-        });
-    }
+// Event Listeners (con defensas por si faltan elementos)
+if (els.logoutBtn) {
+    els.logoutBtn.addEventListener('click', async () => {
+        await FirebaseService.logout();
+        window.location.href = 'login.html';
+    });
+}
 
-    if (els.playFreeBtn && els.freePlayModal) {
-        els.playFreeBtn.addEventListener('click', () => {
-            // Ya se actualiza en tiempo real, solo mostrar el modal
-            // El listener onFreePlayTablesChange mantiene la UI actualizada
-            els.freePlayModal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        });
+if (els.historyBtn) {
+    els.historyBtn.addEventListener('click', () => {
+        window.location.href = 'history.html';
+    });
+}
 
-        if (els.closeFreePlayModal) {
-            els.closeFreePlayModal.addEventListener('click', () => {
-                els.freePlayModal.classList.remove('active');
-                document.body.style.overflow = '';
-            });
+// Listener para botón "Día de Club" (desktop)
+if (els.playFreeBtn) {
+    els.playFreeBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        console.log('🎲 Free Play button clicked');
+        
+        if (!els.freePlayModal) {
+            console.error('❌ Modal element not found');
+            alert('Error: No se pudo abrir el modal. Por favor recargá la página.');
+            return;
         }
+        
+        // Mostrar modal
+        els.freePlayModal.style.display = 'flex';
+        setTimeout(() => {
+            els.freePlayModal.classList.add('active');
+        }, 10);
+        document.body.style.overflow = 'hidden';
+        
+        console.log('✅ Modal opened');
+    });
+}
 
-        els.freePlayModal.addEventListener('click', (e) => {
-            if (e.target === els.freePlayModal) {
-                els.freePlayModal.classList.remove('active');
-                document.body.style.overflow = '';
-            }
-        });
-    }
+// Listener para cerrar modal
+if (els.closeFreePlayModal) {
+    els.closeFreePlayModal.addEventListener('click', () => {
+        closeFreePlayModal();
+    });
+}
+
+// Cerrar al hacer click fuera del modal
+if (els.freePlayModal) {
+    els.freePlayModal.addEventListener('click', (e) => {
+        if (e.target === els.freePlayModal) {
+            closeFreePlayModal();
+        }
+    });
+}
+
+// Función helper para cerrar el modal
+function closeFreePlayModal() {
+    if (!els.freePlayModal) return;
+    
+    els.freePlayModal.classList.remove('active');
+    setTimeout(() => {
+        els.freePlayModal.style.display = 'none';
+    }, 300);
+    document.body.style.overflow = '';
+}
 
     if (els.notificationsBtn) {
         els.notificationsBtn.addEventListener('click', async (e) => {
@@ -1048,140 +1077,131 @@ async function initializeApp(user) {
         startAutoPlay();
     }
 
-    // renderFreePlayTables (recibe tables del listener)
     function renderFreePlayTables(tables) {
-        if (!els.freePlayTablesContainer || !els.freePlayEmptyState) return;
+        console.log('🎯 renderFreePlayTables called with:', tables);
         
-        try {
-            console.log('📊 Rendering free play tables:', tables);
-            
-            if (!tables || tables.length === 0) {
-                els.freePlayTablesContainer.style.display = 'none';
-                els.freePlayEmptyState.style.display = 'block';
-                return;
-            }
-
-            els.freePlayEmptyState.style.display = 'none';
-            els.freePlayTablesContainer.style.display = 'flex';
-            els.freePlayTablesContainer.innerHTML = '';
-
-            tables.forEach(table => {
-                const players = table.players || [];
-                const spotsLeft = table.capacity - players.length;
-                const isFull = spotsLeft <= 0;
-                const isUserEnrolled = players.some(p => p.userId === currentUser?.uid);
-                
-                // Formatear fecha si existe
-                let dateText = 'Fecha a definir';
-                if (table.date) {
-                    try {
-                        const dateObj = new Date(table.date);
-                        if (!isNaN(dateObj.getTime())) {
-                            dateText = dateObj.toLocaleDateString('es-ES', { 
-                                weekday: 'short', 
-                                day: 'numeric', 
-                                month: 'short' 
-                            });
-                        }
-                    } catch (e) {
-                        console.warn('Error parsing date:', e);
-                    }
-                }
-                
-                const timeText = table.timeRange || 'Horario a definir';
-
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.style.opacity = isFull && !isUserEnrolled ? '0.7' : '1';
-
-                card.innerHTML = `
-                    <div class="card-content" style="padding: 1.25rem;">
-                        <!-- Header con número de mesa y cupos -->
-                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.75rem;">
-                            <div>
-                                <h3 class="font-bold" style="font-size: 1.1rem; margin-bottom: 0.25rem;">
-                                    Mesa N° ${table.number}
-                                </h3>
-                                <p class="text-sm" style="color: #1e40af; font-weight: 500;">
-                                    ${table.game || 'Juego no especificado'}
-                                </p>
-                            </div>
-                            <span class="status-badge ${isFull ? 'status-rejected' : 'status-confirmed'}" 
-                                  style="font-size: 0.75rem;">
-                                ${players.length}/${table.capacity} cupos
-                            </span>
-                        </div>
-
-                        <!-- Fecha y horario -->
-                        <div style="display: flex; gap: 1rem; margin-bottom: 1rem; padding: 0.5rem; background-color: #f9fafb; border-radius: 0.375rem;">
-                            <div style="display: flex; align-items: center; gap: 0.25rem;">
-                                <span class="material-symbols-outlined" style="font-size: 16px; color: #6b7280;">calendar_today</span>
-                                <span class="text-sm text-muted">${dateText}</span>
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 0.25rem;">
-                                <span class="material-symbols-outlined" style="font-size: 16px; color: #6b7280;">schedule</span>
-                                <span class="text-sm text-muted">${timeText}</span>
-                            </div>
-                        </div>
-
-                        <!-- Lista de jugadores -->
-                        ${players.length > 0 ? `
-                            <div style="margin-bottom: 1rem; padding: 0.75rem; background-color: #f3f4f6; border-radius: 0.375rem;">
-                                <p class="text-sm font-bold" style="margin-bottom: 0.5rem; color: #374151;">
-                                    Jugadores anotados:
-                                </p>
-                                <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                                    ${players.map(p => `
-                                        <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                            <span class="material-symbols-outlined" style="font-size: 14px; color: #10b981;">check_circle</span>
-                                            <span class="text-sm" style="color: #1f2937;">
-                                                ${p.userName || 'Usuario'}${p.userId === currentUser?.uid ? ' (vos)' : ''}
-                                            </span>
-                                        </div>
-                                    `).join('')}
-                                </div>
-                            </div>
-                        ` : ` 
-                            <p class="text-sm text-muted" style="margin-bottom: 1rem; font-style: italic;">
-                                Sé el primero en anotarte!
-                            </p>
-                        `}
-
-                        <!-- Botón de acción -->
-                        <button 
-                            class="btn w-full ${isUserEnrolled ? 'btn-destructive' : isFull ? 'btn-outline' : 'btn-primary'}"
-                            data-table-id="${table.id}"
-                            data-action="${isUserEnrolled ? 'leave' : 'join'}"
-                            ${isFull && !isUserEnrolled ? 'disabled' : ''}
-                            style="margin-top: auto;">
-                            ${isUserEnrolled 
-                                ? 'Desanotarme' 
-                                : isFull 
-                                    ? 'Mesa completa' 
-                                    : `Anotarme (${spotsLeft} cupo${spotsLeft !== 1 ? 's' : ''} libre${spotsLeft !== 1 ? 's' : ''})` 
-                            }
-                        </button>
-                    </div>
-                `;
-
-                els.freePlayTablesContainer.appendChild(card);
+        if (!els.freePlayTablesContainer || !els.freePlayEmptyState) {
+            console.error('❌ Required elements not found:', {
+                container: !!els.freePlayTablesContainer,
+                emptyState: !!els.freePlayEmptyState
             });
-
-            // Agregar event listeners a los botones
-            attachFreePlayButtonListeners();
-
-        } catch (error) {
-            console.error('❌ Error renderizando mesas libres:', error);
+            return;
+        }
+        
+        if (!tables || tables.length === 0) {
+            console.log('ℹ️ No tables available, showing empty state');
             els.freePlayEmptyState.style.display = 'block';
             els.freePlayTablesContainer.style.display = 'none';
+            return;
         }
+
+        console.log(`🔄 Rendering ${tables.length} free play tables`);
+        
+        els.freePlayEmptyState.style.display = 'none';
+        els.freePlayTablesContainer.style.display = 'grid';
+        els.freePlayTablesContainer.innerHTML = '';
+
+        tables.forEach((table, index) => {
+            const isUserInTable = currentUser && table.players && table.players.some(p => p.id === currentUser.uid);
+            const isTableFull = table.maxPlayers && table.players && table.players.length >= table.maxPlayers;
+            
+            const card = document.createElement('div');
+            card.className = `card ${isUserInTable ? 'border-l-4 border-primary' : ''}`;
+            card.dataset.tableId = table.id || `table-${index}`;
+            
+            const content = document.createElement('div');
+            content.className = 'card-content';
+            
+            // Header with table number and status
+            const header = document.createElement('div');
+            header.className = 'flex justify-between items-start mb-3';
+            
+            const title = document.createElement('h3');
+            title.className = 'text-lg font-semibold';
+            title.textContent = `Mesa ${table.number || index + 1}`;
+            
+            const statusBadge = document.createElement('span');
+            statusBadge.className = `px-2 py-1 text-xs rounded-full ${
+                isTableFull ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
+            }`;
+            statusBadge.textContent = isTableFull ? 'Completa' : 'Disponible';
+            
+            header.appendChild(title);
+            header.appendChild(statusBadge);
+            content.appendChild(header);
+            
+            // Table details
+            const details = document.createElement('div');
+            details.className = 'space-y-2 text-sm';
+            
+            // Game name
+            if (table.gameName) {
+                const gameName = document.createElement('p');
+                gameName.className = 'font-medium';
+                gameName.textContent = table.gameName;
+                details.appendChild(gameName);
+            }
+            
+            // Players
+            const playersInfo = document.createElement('p');
+            playersInfo.className = 'text-muted';
+            const playerCount = table.players ? table.players.length : 0;
+            const maxPlayers = table.maxPlayers || 4;
+            playersInfo.textContent = `Jugadores: ${playerCount}/${maxPlayers}`;
+            details.appendChild(playersInfo);
+            
+            // Schedule
+            if (table.schedule) {
+                const schedule = document.createElement('p');
+                schedule.className = 'text-muted text-sm';
+                schedule.textContent = `Horario: ${table.schedule}`;
+                details.appendChild(schedule);
+            }
+            
+            // Description
+            if (table.description) {
+                const desc = document.createElement('p');
+                desc.className = 'text-muted text-sm mt-2';
+                desc.textContent = table.description;
+                details.appendChild(desc);
+            }
+            
+            content.appendChild(details);
+            
+            // Action button
+            const actionBtn = document.createElement('button');
+            actionBtn.className = `w-full mt-4 py-2 px-4 rounded-md text-sm font-medium ${
+                isUserInTable 
+                    ? 'bg-red-50 text-red-700 hover:bg-red-100' 
+                    : isTableFull 
+                        ? 'bg-gray-100 text-gray-500 cursor-not-allowed' 
+                        : 'bg-primary text-white hover:bg-primary-dark'
+            }`;
+            actionBtn.textContent = isUserInTable ? 'Abandonar mesa' : (isTableFull ? 'Mesa llena' : 'Unirse a la mesa');
+            actionBtn.disabled = isTableFull && !isUserInTable;
+            actionBtn.dataset.action = isUserInTable ? 'leave' : 'join';
+            actionBtn.dataset.tableId = table.id || `table-${index}`;
+            
+            content.appendChild(actionBtn);
+            card.appendChild(content);
+            els.freePlayTablesContainer.appendChild(card);
+        });
+        
+        // Attach event listeners to the buttons
+        attachFreePlayButtonListeners();
     }
 
     // Función para manejar clicks en botones de mesas libres
     function attachFreePlayButtonListeners() {
-        const buttons = document.querySelectorAll('#freePlayTablesContainer button[data-table-id]');
+        const buttons = document.querySelectorAll('#freePlayTablesContainer button[data-action]');
         
         buttons.forEach(button => {
+            // Remove any existing listeners to prevent duplicates
+            button.replaceWith(button.cloneNode(true));
+        });
+
+        // Add new listeners
+        document.querySelectorAll('#freePlayTablesContainer button[data-action]').forEach(button => {
             button.addEventListener('click', async (e) => {
                 e.preventDefault();
                 const tableId = button.dataset.tableId;
