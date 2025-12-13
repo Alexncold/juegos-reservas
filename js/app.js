@@ -1226,8 +1226,10 @@ if (els.notificationsBtn) {
                 
                 console.log('🎯 Button clicked:', { tableId, action });
                 
-                if (!currentUser) {
-                    alert('Debes iniciar sesión para anotarte');
+                // Verify currentUser is properly loaded
+                if (!currentUser || !currentUser.uid) {
+                    console.error('User not properly authenticated:', { currentUser });
+                    alert('Error: No se pudo verificar tu sesión. Por favor, recarga la página e intenta nuevamente.');
                     return;
                 }
 
@@ -1241,44 +1243,103 @@ if (els.notificationsBtn) {
                         // Pedir número de teléfono si no lo tiene en el state
                         let phoneNumber = state.phoneNumber;
                         
+                        // Ensure we have a valid user before proceeding
+                        if (!currentUser || !currentUser.uid) {
+                            throw new Error('No se pudo verificar tu usuario. Por favor, recarga la página.');
+                        }
+                        
                         if (!phoneNumber) {
-                            phoneNumber = prompt('Ingresá tu número de WhatsApp para que podamos contactarte:');
+                            phoneNumber = prompt('Ingresá tu número de WhatsApp para que podamos contactarte (ej: 3624000000):');
+                            
+                            // Validar formato del número (al menos 8 dígitos, sin prefijo)
+                            const phoneRegex = /^\d{8,15}$/;
                             if (!phoneNumber) {
                                 button.disabled = false;
                                 button.textContent = originalText;
                                 return;
                             }
+                            
+                            // Limpiar cualquier carácter que no sea número
+                            phoneNumber = phoneNumber.replace(/\D/g, '');
+                            
+                            if (!phoneRegex.test(phoneNumber)) {
+                                alert('Por favor ingresá un número de teléfono válido (8-15 dígitos)');
+                                button.disabled = false;
+                                button.textContent = originalText;
+                                return;
+                            }
+                            
                             // Guardar en state para futuras anotaciones
                             state.phoneNumber = phoneNumber;
+                            console.log('📱 Phone number saved to state:', phoneNumber);
                         }
 
-                        console.log('📝 Attempting to join table:', { tableId, user: currentUser.uid, phoneNumber });
-
-                        const result = await FirebaseService.addPlayerToFreePlayTable(
+                        console.log('📝 Attempting to join table:', { 
                             tableId, 
-                            { 
-                                uid: currentUser.uid, 
-                                name: currentUser.displayName || currentUser.email.split('@')[0] 
-                            },
-                            phoneNumber
-                        );
+                            user: currentUser ? currentUser.uid : 'no-user',
+                            hasPhone: !!phoneNumber 
+                        });
 
-                        console.log('📊 Join result:', result);
+                        // Double-check user is still authenticated
+                        if (!currentUser || !currentUser.uid) {
+                            throw new Error('La sesión expiró. Por favor, recarga la página.');
+                        }
+
+                        try {
+                            const result = await FirebaseService.addPlayerToFreePlayTable(
+                                tableId, 
+                                { 
+                                    uid: currentUser.uid, 
+                                    name: currentUser.displayName || currentUser.email.split('@')[0] 
+                                },
+                                phoneNumber
+                            );
+
+                            console.log('📊 Join result:', result);
+
+                            if (!result.success) {
+                                throw new Error(result.error || 'Error al anotarse en la mesa');
+                            }
+                            
+                            // Update UI immediately on success
+                            button.textContent = 'Desanotarme';
+                            button.classList.remove('btn-primary');
+                            button.classList.add('btn-destructive');
+                            button.dataset.action = 'leave';
+                            
+                        } catch (error) {
+                            console.error('❌ Error adding player:', error);
+                            // Don't rethrow here, let the outer catch handle it
+                            throw error;
+                        }
                     } else if (action === 'leave') {
                         if (confirm('¿Estás seguro que querés desanotarte de esta mesa?')) {
                             console.log('📝 Attempting to leave table:', { tableId, user: currentUser.uid });
+                            button.textContent = 'Procesando...';
 
-                            result = await FirebaseService.removePlayerFromFreePlayTable(
-                                tableId,
-                                currentUser.uid
-                            );
+                            try {
+                                const success = await FirebaseService.removePlayerFromFreePlayTable(
+                                    tableId,
+                                    currentUser.uid
+                                );
 
-                            console.log('📊 Leave result:', success);
+                                console.log('📊 Leave result:', success);
 
-                            if (success) {
-                                alert('Te desanotaste correctamente.');
-                            } else {
-                                alert('No se pudo desanotar. Intentá de nuevo.');
+                                if (!success) {
+                                    throw new Error('No se pudo desanotar');
+                                }
+
+                                // Update UI immediately on success
+                                button.textContent = 'Anotarme';
+                                button.classList.remove('btn-destructive');
+                                button.classList.add('btn-primary');
+                                button.dataset.action = 'join';
+                                
+                                // Show success message
+                                alert('Te has desanotado correctamente de la mesa.');
+                            } catch (error) {
+                                console.error('❌ Error removing player:', error);
+                                throw error; // Let the outer catch handle it
                             }
                         } else {
                             // Usuario canceló
@@ -1289,9 +1350,14 @@ if (els.notificationsBtn) {
                     }
                 } catch (error) {
                     console.error('❌ Error en acción de mesa libre:', error);
-                    alert('Ocurrió un error. Por favor intentá de nuevo.');
+                    console.error('❌ Error en acción de mesa libre:', error);
+                    alert(error.message || 'Ocurrió un error. Por favor intentá de nuevo.');
                 } finally {
-                    // El listener onFreePlayTablesChange re-renderizará automáticamente
+                    // Forzar recarga de datos para asegurar consistencia
+                    const tables = await FirebaseService.getFreePlayTables();
+                    renderFreePlayTables(tables);
+                    
+                    // Restaurar estado del botón
                     button.disabled = false;
                     button.textContent = originalText;
                 }
