@@ -427,10 +427,166 @@
             }
         }
 
-        /* Estilos para el modal de Free Play */
+        /* Estilos para el modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            padding: 1rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            position: relative;
+            z-index: 10001;
+            pointer-events: auto;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+            padding: 0.25rem;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: #333;
+        }
+
+        .modal-content h2 {
+            margin-top: 0;
+            color: #1B203D;
+        }
+
+        /* Estilos específicos para el modal de Free Play */
         #freePlayModal .modal-content {
-            max-width: 900px;
-            width: 95%;
+            max-width: 600px;
+            width: 90%;
+        }
+
+        #freePlayTablesContainer {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            width: 100%;
+        }
+
+        #freePlayTablesContainer .card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+            overflow: hidden;
+        }
+
+        #freePlayTablesContainer .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        #freePlayTablesContainer .card-content {
+            padding: 1.25rem;
+        }
+
+        #freePlayTablesContainer .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        #freePlayTablesContainer .status-confirmed {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        #freePlayTablesContainer .status-rejected {
+            background-color: #fee2e2;
+            color: #b91c1c;
+        }
+
+        #freePlayTablesContainer .btn {
+            width: 100%;
+            margin-top: 1rem;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius);
+            font-weight: 500;
+            font-size: 0.875rem;
+            text-align: center;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+
+        #freePlayTablesContainer .btn-primary {
+            background-color: #4CAF50; /* Green color to match payment button */
+            color: white;
+            border: none;
+            transition: background-color 0.3s, opacity 0.2s;
+        }
+        
+        #freePlayTablesContainer .btn-primary:hover:not(:disabled) {
+            background-color: #45a049; /* Slightly darker green on hover */
+            opacity: 0.9;
+        }
+
+        #freePlayTablesContainer .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--border);
+            color: var(--muted-foreground);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        #freePlayTablesContainer .btn-destructive {
+            background-color: var(--destructive);
+            color: var(--destructive-foreground);
+        }
+
+        #freePlayTablesContainer .btn-destructive:hover {
+            opacity: 0.9;
+        }
+
+        @media (max-width: 640px) {
+            #freePlayModal .modal-content {
+                max-width: 100%;
+                width: 95%;
+                max-height: 90vh;
+            }
         }
 
         #freePlayTablesContainer {
@@ -818,47 +974,33 @@
                 </div>
             </div>
         </div>
-
-        <!-- Modal de Día de Club (FREE PLAY) -->
-        <div id="freePlayModal" class="modal-overlay" style="display: none;">
-            <div class="modal-content" style="max-width: 900px; max-height: 85vh; overflow-y: auto;">
-                <button class="modal-close" id="closeFreePlayModal">&times;</button>
-                <h2 class="text-xl font-bold mb-4">Día de Club - Mesas Disponibles</h2>
-                
-                <p class="text-muted text-sm mb-6">
-                    Seleccioná una mesa para anotarte y jugar gratis. Los cupos son limitados.
-                </p>
-                
-                <!-- Container para las tarjetas de mesas -->
-                <div id="freePlayTablesContainer" style="
-                    display: flex;
-                    flex-wrap: wrap;
-                    gap: 1rem;
-                    width: 100%;
-                ">
-                    <!-- Las mesas se cargan dinámicamente desde Firebase -->
-                </div>
-                
-                <!-- Estado vacío -->
-                <div id="freePlayEmptyState" style="
-                    display: none;
-                    text-align: center;
-                    padding: 3rem 1rem;
-                ">
-                    <span class="material-symbols-outlined" style="
-                        font-size: 64px;
-                        color: #d1d5db;
-                        margin-bottom: 1rem;
-                    ">casino</span>
-                    <h3 class="font-bold text-lg mb-2">No hay mesas disponibles</h3>
-                    <p class="text-muted text-sm">
-                        Volvé más tarde para ver las nuevas mesas disponibles.
-                    </p>
-                </div>
-            </div>
-        </div>
     </main>
 
+    <!-- Modal de Día de Club (FREE PLAY) -->
+    <div id="freePlayModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close" id="closeFreePlayModal">&times;</button>
+            <h2 class="text-xl font-bold mb-4">Día de Club - Mesas Disponibles</h2>
+            
+            <p class="text-muted text-sm mb-6">
+                Seleccioná una mesa para anotarte y jugar gratis. Los cupos son limitados.
+            </p>
+            
+            <!-- Container para las tarjetas de mesas -->
+            <div id="freePlayTablesContainer">
+                <!-- Las mesas se cargan dinámicamente desde Firebase -->
+            </div>
+            
+            <!-- Estado vacío -->
+            <div id="freePlayEmptyState" class="hidden text-center py-12 px-4">
+                <span class="material-symbols-outlined text-gray-300 text-6xl mb-4">casino</span>
+                <h3 class="font-bold text-lg mb-2">No hay mesas disponibles</h3>
+                <p class="text-muted text-sm">
+                    Volvé más tarde para ver las nuevas mesas disponibles.
+                </p>
+            </div>
+        </div>
+    </div>
 
     <!-- Modal de Confirmación de Reserva -->
     <div id="reservationModal" class="modal-overlay" style="display: none;">

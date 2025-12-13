@@ -283,54 +283,64 @@ if (els.historyBtn) {
 if (els.playFreeBtn) {
     els.playFreeBtn.addEventListener('click', (e) => {
         e.preventDefault();
-        console.log('🎲 Free Play button clicked');
-        
-        if (!els.freePlayModal) {
-            console.error('❌ Modal element not found');
-            alert('Error: No se pudo abrir el modal. Por favor recargá la página.');
-            return;
-        }
-        
-        // Mostrar modal
-        els.freePlayModal.style.display = 'flex';
-        setTimeout(() => {
-            els.freePlayModal.classList.add('active');
-        }, 10);
+        openFreePlayModal();
+    });
+}
+
+// Función para abrir el modal de Free Play
+function openFreePlayModal() {
+    console.log('🎲 Free Play button clicked');
+    if (els.freePlayModal) {
+        els.freePlayModal.classList.add('active');
         document.body.style.overflow = 'hidden';
-        
         console.log('✅ Modal opened');
-    });
+    } else {
+        console.error('❌ Free Play modal not found');
+    }
 }
 
-// Listener para cerrar modal
-if (els.closeFreePlayModal) {
-    els.closeFreePlayModal.addEventListener('click', () => {
+// Cerrar modal al hacer clic fuera del contenido o presionar ESC
+function handleModalOutsideClick(e) {
+    if (e.target.classList.contains('modal-overlay')) {
         closeFreePlayModal();
-    });
+    }
 }
 
-// Cerrar al hacer click fuera del modal
+function handleEscapeKey(e) {
+    if (e.key === 'Escape' && els.freePlayModal.classList.contains('active')) {
+        closeFreePlayModal();
+    }
+}
+
+// Inicializar event listeners para el modal
 if (els.freePlayModal) {
-    els.freePlayModal.addEventListener('click', (e) => {
-        if (e.target === els.freePlayModal) {
-            closeFreePlayModal();
-        }
-    });
-}
-
-// Función helper para cerrar el modal
-function closeFreePlayModal() {
-    if (!els.freePlayModal) return;
+    // Cerrar al hacer clic fuera del contenido
+    els.freePlayModal.addEventListener('click', handleModalOutsideClick);
     
-    els.freePlayModal.classList.remove('active');
-    setTimeout(() => {
-        els.freePlayModal.style.display = 'none';
-    }, 300);
-    document.body.style.overflow = '';
+    // Cerrar con tecla ESC
+    document.addEventListener('keydown', handleEscapeKey);
+    
+    // Limpiar event listeners al cerrar
+    const closeButton = document.getElementById('closeFreePlayModal');
+    if (closeButton) {
+        closeButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            closeFreePlayModal();
+        });
+    }
 }
 
-    if (els.notificationsBtn) {
-        els.notificationsBtn.addEventListener('click', async (e) => {
+// Función para cerrar el modal de Free Play
+function closeFreePlayModal() {
+    if (els.freePlayModal) {
+        els.freePlayModal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+}
+
+// Notifications handling
+if (els.notificationsBtn) {
+    els.notificationsBtn.addEventListener('click', async (e) => {
             const dropdown = document.getElementById('notificationsDropdown');
             if (!dropdown) return;
 
@@ -1098,114 +1108,123 @@ function closeFreePlayModal() {
         console.log(`🔄 Rendering ${tables.length} free play tables`);
         
         els.freePlayEmptyState.style.display = 'none';
-        els.freePlayTablesContainer.style.display = 'grid';
+        els.freePlayTablesContainer.style.display = 'flex';
         els.freePlayTablesContainer.innerHTML = '';
 
-        tables.forEach((table, index) => {
-            const isUserInTable = currentUser && table.players && table.players.some(p => p.id === currentUser.uid);
-            const isTableFull = table.maxPlayers && table.players && table.players.length >= table.maxPlayers;
+        tables.forEach((table) => {
+            const players = table.players || [];
+            const spotsLeft = table.capacity - players.length;
+            const isFull = spotsLeft <= 0;
+            const isUserEnrolled = currentUser && players.some(p => p.userId === currentUser.uid);
             
+            // Formatear fecha si existe
+            let dateText = 'Fecha a definir';
+            if (table.date) {
+                try {
+                    const dateObj = new Date(table.date);
+                    if (!isNaN(dateObj.getTime())) {
+                        dateText = dateObj.toLocaleDateString('es-ES', { 
+                            weekday: 'long', 
+                            day: 'numeric', 
+                            month: 'long' 
+                        });
+                    }
+                } catch (e) {
+                    console.warn('Error parsing date:', e);
+                }
+            }
+            
+            const timeText = table.timeRange || 'Horario a definir';
+
             const card = document.createElement('div');
-            card.className = `card ${isUserInTable ? 'border-l-4 border-primary' : ''}`;
-            card.dataset.tableId = table.id || `table-${index}`;
-            
-            const content = document.createElement('div');
-            content.className = 'card-content';
-            
-            // Header with table number and status
-            const header = document.createElement('div');
-            header.className = 'flex justify-between items-start mb-3';
-            
-            const title = document.createElement('h3');
-            title.className = 'text-lg font-semibold';
-            title.textContent = `Mesa ${table.number || index + 1}`;
-            
-            const statusBadge = document.createElement('span');
-            statusBadge.className = `px-2 py-1 text-xs rounded-full ${
-                isTableFull ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
-            }`;
-            statusBadge.textContent = isTableFull ? 'Completa' : 'Disponible';
-            
-            header.appendChild(title);
-            header.appendChild(statusBadge);
-            content.appendChild(header);
-            
-            // Table details
-            const details = document.createElement('div');
-            details.className = 'space-y-2 text-sm';
-            
-            // Game name
-            if (table.gameName) {
-                const gameName = document.createElement('p');
-                gameName.className = 'font-medium';
-                gameName.textContent = table.gameName;
-                details.appendChild(gameName);
-            }
-            
-            // Players
-            const playersInfo = document.createElement('p');
-            playersInfo.className = 'text-muted';
-            const playerCount = table.players ? table.players.length : 0;
-            const maxPlayers = table.maxPlayers || 4;
-            playersInfo.textContent = `Jugadores: ${playerCount}/${maxPlayers}`;
-            details.appendChild(playersInfo);
-            
-            // Schedule
-            if (table.schedule) {
-                const schedule = document.createElement('p');
-                schedule.className = 'text-muted text-sm';
-                schedule.textContent = `Horario: ${table.schedule}`;
-                details.appendChild(schedule);
-            }
-            
-            // Description
-            if (table.description) {
-                const desc = document.createElement('p');
-                desc.className = 'text-muted text-sm mt-2';
-                desc.textContent = table.description;
-                details.appendChild(desc);
-            }
-            
-            content.appendChild(details);
-            
-            // Action button
-            const actionBtn = document.createElement('button');
-            actionBtn.className = `w-full mt-4 py-2 px-4 rounded-md text-sm font-medium ${
-                isUserInTable 
-                    ? 'bg-red-50 text-red-700 hover:bg-red-100' 
-                    : isTableFull 
-                        ? 'bg-gray-100 text-gray-500 cursor-not-allowed' 
-                        : 'bg-primary text-white hover:bg-primary-dark'
-            }`;
-            actionBtn.textContent = isUserInTable ? 'Abandonar mesa' : (isTableFull ? 'Mesa llena' : 'Unirse a la mesa');
-            actionBtn.disabled = isTableFull && !isUserInTable;
-            actionBtn.dataset.action = isUserInTable ? 'leave' : 'join';
-            actionBtn.dataset.tableId = table.id || `table-${index}`;
-            
-            content.appendChild(actionBtn);
-            card.appendChild(content);
+            card.className = 'card';
+
+            card.innerHTML = `
+                <div class="card-content">
+                    <!-- Header -->
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.75rem;">
+                        <div>
+                            <h3 class="font-bold" style="font-size: 1.125rem; margin-bottom: 0.25rem;">
+                                Mesa N° ${table.number}
+                            </h3>
+                            <p class="text-sm" style="color: #1e40af; font-weight: 500;">
+                                ${table.game || 'Juego no especificado'}
+                            </p>
+                        </div>
+                        <span class="status-badge ${isFull ? 'status-rejected' : 'status-confirmed'}">
+                            ${players.length}/${table.capacity} cupos
+                        </span>
+                    </div>
+
+                    <!-- Fecha y horario -->
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; padding: 0.75rem; background-color: #f9fafb; border-radius: 0.375rem;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span class="material-symbols-outlined" style="font-size: 18px; color: #6b7280;">calendar_today</span>
+                            <span class="text-sm text-muted">${dateText}</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span class="material-symbols-outlined" style="font-size: 18px; color: #6b7280;">schedule</span>
+                            <span class="text-sm text-muted">${timeText}</span>
+                        </div>
+                    </div>
+
+                    <!-- Lista de jugadores -->
+                    ${players.length > 0 ? `
+                        <div style="margin-bottom: 1rem; padding: 0.75rem; background-color: #f3f4f6; border-radius: 0.375rem;">
+                            <p class="text-sm font-bold" style="margin-bottom: 0.5rem; color: #374151;">
+                                Jugadores anotados:
+                            </p>
+                            <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                                ${players.map(p => `
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <span class="material-symbols-outlined" style="font-size: 14px; color: #10b981;">check_circle</span>
+                                        <span class="text-sm" style="color: #1f2937;">
+                                            ${p.userName || 'Usuario'}${p.userId === currentUser?.uid ? ' (vos)' : ''}
+                                        </span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ` 
+                        <p class="text-sm text-muted" style="margin-bottom: 1rem; font-style: italic;">
+                            Sé el primero en anotarte!
+                        </p>
+                    `}
+
+                    <!-- Botón de acción -->
+                    <button 
+                        class="btn ${isUserEnrolled ? 'btn-destructive' : isFull ? 'btn-outline' : 'btn-primary'}"
+                        data-table-id="${table.id}"
+                        data-action="${isUserEnrolled ? 'leave' : 'join'}"
+                        ${isFull && !isUserEnrolled ? 'disabled' : ''}>
+                        ${isUserEnrolled 
+                            ? 'Desanotarme' 
+                            : isFull 
+                                ? 'Mesa completa' 
+                                : `Anotarme (${spotsLeft} cupo${spotsLeft !== 1 ? 's' : ''} libre${spotsLeft !== 1 ? 's' : ''})` 
+                        }
+                    </button>
+                </div>
+            `;
+
             els.freePlayTablesContainer.appendChild(card);
         });
-        
-        // Attach event listeners to the buttons
+
+        // Agregar event listeners a los botones
         attachFreePlayButtonListeners();
     }
 
     // Función para manejar clicks en botones de mesas libres
     function attachFreePlayButtonListeners() {
-        const buttons = document.querySelectorAll('#freePlayTablesContainer button[data-action]');
+        const buttons = document.querySelectorAll('#freePlayTablesContainer button[data-table-id]');
         
         buttons.forEach(button => {
-            // Remove any existing listeners to prevent duplicates
-            button.replaceWith(button.cloneNode(true));
-        });
-
-        // Add new listeners
-        document.querySelectorAll('#freePlayTablesContainer button[data-action]').forEach(button => {
             button.addEventListener('click', async (e) => {
                 e.preventDefault();
                 const tableId = button.dataset.tableId;
                 const action = button.dataset.action;
+                
+                console.log('🎯 Button clicked:', { tableId, action });
                 
                 if (!currentUser) {
                     alert('Debes iniciar sesión para anotarte');
@@ -1233,33 +1252,43 @@ function closeFreePlayModal() {
                             state.phoneNumber = phoneNumber;
                         }
 
+                        console.log('📝 Attempting to join table:', { tableId, user: currentUser.uid, phoneNumber });
+
                         const result = await FirebaseService.addPlayerToFreePlayTable(
                             tableId, 
-                            currentUser,
+                            { 
+                                uid: currentUser.uid, 
+                                name: currentUser.displayName || currentUser.email.split('@')[0] 
+                            },
                             phoneNumber
                         );
 
-                        if (result.success) {
-                            alert('¡Te anotaste con éxito! Te contactaremos pronto.');
-                        } else {
-                            alert(result.error || 'No se pudo anotar. Intentá de nuevo.');
-                        }
+                        console.log('📊 Join result:', result);
                     } else if (action === 'leave') {
                         if (confirm('¿Estás seguro que querés desanotarte de esta mesa?')) {
-                            const success = await FirebaseService.removePlayerFromFreePlayTable(
+                            console.log('📝 Attempting to leave table:', { tableId, user: currentUser.uid });
+
+                            result = await FirebaseService.removePlayerFromFreePlayTable(
                                 tableId,
                                 currentUser.uid
                             );
+
+                            console.log('📊 Leave result:', success);
 
                             if (success) {
                                 alert('Te desanotaste correctamente.');
                             } else {
                                 alert('No se pudo desanotar. Intentá de nuevo.');
                             }
+                        } else {
+                            // Usuario canceló
+                            button.disabled = false;
+                            button.textContent = originalText;
+                            return;
                         }
                     }
                 } catch (error) {
-                    console.error('Error en acción de mesa libre:', error);
+                    console.error('❌ Error en acción de mesa libre:', error);
                     alert('Ocurrió un error. Por favor intentá de nuevo.');
                 } finally {
                     // El listener onFreePlayTablesChange re-renderizará automáticamente
