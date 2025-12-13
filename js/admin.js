@@ -389,185 +389,185 @@ async function initializeAdminPanel() {
         }
     }
 
- // --- Calendar Logic ---
-let adminDate = new Date();
-const adminCalendarGrid = document.getElementById('adminCalendarGrid');
-const adminMonthDisplay = document.getElementById('adminMonthDisplay');
+    // --- Calendar Logic ---
+    let adminDate = new Date();
+    const adminCalendarGrid = document.getElementById('adminCalendarGrid');
+    const adminMonthDisplay = document.getElementById('adminMonthDisplay');
 
-const dateManagementPanel = document.getElementById('dateManagementPanel');
-const selectedDateDisplay = document.getElementById('selectedDateDisplay');
-const toggleBlockBtn = document.getElementById('toggleBlockBtn');
-const specialDateName = document.getElementById('specialDateName');
-const saveSpecialDateBtn = document.getElementById('saveSpecialDateBtn');
-const deleteSpecialDateBtn = document.getElementById('deleteSpecialDateBtn');
+    const dateManagementPanel = document.getElementById('dateManagementPanel');
+    const selectedDateDisplay = document.getElementById('selectedDateDisplay');
+    const toggleBlockBtn = document.getElementById('toggleBlockBtn');
+    const specialDateName = document.getElementById('specialDateName');
+    const saveSpecialDateBtn = document.getElementById('saveSpecialDateBtn');
+    const deleteSpecialDateBtn = document.getElementById('deleteSpecialDateBtn');
 
-let selectedDateString = null;
-let cachedBlockedDates = [];
-let cachedSpecialDates = {};
+    let selectedDateString = null;
+    let cachedBlockedDates = [];
+    let cachedSpecialDates = {};
 
-// Listeners en tiempo real para fechas
-let unsubscribeBlockedDates = FirebaseService.onBlockedDatesChange((dates) => {
-    cachedBlockedDates = dates;
-    renderAdminCalendar();
-});
-
-let unsubscribeSpecialDates = FirebaseService.onSpecialDatesChange((dates) => {
-    cachedSpecialDates = dates;
-    renderAdminCalendar();
-});
-
-document.getElementById('adminPrevMonth').addEventListener('click', () => {
-    adminDate.setMonth(adminDate.getMonth() - 1);
-    renderAdminCalendar();
-});
-
-document.getElementById('adminNextMonth').addEventListener('click', () => {
-    adminDate.setMonth(adminDate.getMonth() + 1);
-    renderAdminCalendar();
-});
-
-function renderAdminCalendar() {
-    const year = adminDate.getFullYear();
-    const month = adminDate.getMonth();
-    const firstDay = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-    adminMonthDisplay.textContent = new Intl.DateTimeFormat('es-ES', { 
-        month: 'long', 
-        year: 'numeric' 
-    }).format(adminDate);
-    
-    adminCalendarGrid.innerHTML = '';
-
-    for (let i = 0; i < firstDay; i++) {
-        adminCalendarGrid.appendChild(document.createElement('div'));
-    }
-
-    for (let i = 1; i <= daysInMonth; i++) {
-        const date = new Date(year, month, i);
-        const dateString = date.toISOString().split('T')[0];
-        const div = document.createElement('div');
-        div.className = 'calendar-day';
-        div.textContent = i;
-
-        if (cachedBlockedDates.includes(dateString)) {
-            div.classList.add('disabled');
-            div.style.backgroundColor = '#fee2e2';
-            div.style.color = '#ef4444';
-        } else if (cachedSpecialDates[dateString]) {
-            div.style.backgroundColor = '#dbeafe';
-            div.style.color = '#1e40af';
-            div.style.fontWeight = 'bold';
-            div.title = cachedSpecialDates[dateString];
-            const indicator = document.createElement('div');
-            indicator.style.fontSize = '0.6rem';
-            indicator.textContent = '★';
-            div.appendChild(indicator);
-        }
-
-        if (selectedDateString === dateString) {
-            div.style.border = '2px solid var(--primary)';
-        }
-
-        div.addEventListener('click', () => {
-            selectDate(dateString, date);
-        });
-
-        adminCalendarGrid.appendChild(div);
-    }
-}
-
-function selectDate(dateString, dateObj) {
-    selectedDateString = dateString;
-
-    dateManagementPanel.style.opacity = '1';
-    dateManagementPanel.style.pointerEvents = 'auto';
-
-    selectedDateDisplay.textContent = dateObj.toLocaleDateString('es-ES', { 
-        weekday: 'long', 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
+    // Listeners en tiempo real para fechas
+    let unsubscribeBlockedDates = FirebaseService.onBlockedDatesChange((dates) => {
+        cachedBlockedDates = dates;
+        renderAdminCalendar();
     });
 
-    specialDateName.value = cachedSpecialDates[dateString] || '';
+    let unsubscribeSpecialDates = FirebaseService.onSpecialDatesChange((dates) => {
+        cachedSpecialDates = dates;
+        renderAdminCalendar();
+    });
 
+    document.getElementById('adminPrevMonth').addEventListener('click', () => {
+        adminDate.setMonth(adminDate.getMonth() - 1);
+        renderAdminCalendar();
+    });
+
+    document.getElementById('adminNextMonth').addEventListener('click', () => {
+        adminDate.setMonth(adminDate.getMonth() + 1);
+        renderAdminCalendar();
+    });
+
+    function renderAdminCalendar() {
+        const year = adminDate.getFullYear();
+        const month = adminDate.getMonth();
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        adminMonthDisplay.textContent = new Intl.DateTimeFormat('es-ES', {
+            month: 'long',
+            year: 'numeric'
+        }).format(adminDate);
+
+        adminCalendarGrid.innerHTML = '';
+
+        for (let i = 0; i < firstDay; i++) {
+            adminCalendarGrid.appendChild(document.createElement('div'));
+        }
+
+        for (let i = 1; i <= daysInMonth; i++) {
+            const date = new Date(year, month, i);
+            const dateString = date.toISOString().split('T')[0];
+            const div = document.createElement('div');
+            div.className = 'calendar-day';
+            div.textContent = i;
+
+            if (cachedBlockedDates.includes(dateString)) {
+                div.classList.add('disabled');
+                div.style.backgroundColor = '#fee2e2';
+                div.style.color = '#ef4444';
+            } else if (cachedSpecialDates[dateString]) {
+                div.style.backgroundColor = '#dbeafe';
+                div.style.color = '#1e40af';
+                div.style.fontWeight = 'bold';
+                div.title = cachedSpecialDates[dateString];
+                const indicator = document.createElement('div');
+                indicator.style.fontSize = '0.6rem';
+                indicator.textContent = '★';
+                div.appendChild(indicator);
+            }
+
+            if (selectedDateString === dateString) {
+                div.style.border = '2px solid var(--primary)';
+            }
+
+            div.addEventListener('click', () => {
+                selectDate(dateString, date);
+            });
+
+            adminCalendarGrid.appendChild(div);
+        }
+    }
+
+    function selectDate(dateString, dateObj) {
+        selectedDateString = dateString;
+
+        dateManagementPanel.style.opacity = '1';
+        dateManagementPanel.style.pointerEvents = 'auto';
+
+        selectedDateDisplay.textContent = dateObj.toLocaleDateString('es-ES', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+
+        specialDateName.value = cachedSpecialDates[dateString] || '';
+
+        renderAdminCalendar();
+    }
+
+    toggleBlockBtn.addEventListener('click', async () => {
+        if (!selectedDateString) return;
+
+        try {
+            toggleBlockBtn.disabled = true;
+            toggleBlockBtn.textContent = 'Procesando...';
+
+            await FirebaseService.toggleBlockDate(selectedDateString);
+
+            toggleBlockBtn.disabled = false;
+            toggleBlockBtn.textContent = 'Bloquear / Desbloquear';
+
+            // No necesitamos renderizar manualmente, el listener lo hará
+        } catch (error) {
+            console.error('Error al bloquear/desbloquear fecha:', error);
+            alert('Error al actualizar la fecha. Intentá de nuevo.');
+            toggleBlockBtn.disabled = false;
+            toggleBlockBtn.textContent = 'Bloquear / Desbloquear';
+        }
+    });
+
+    saveSpecialDateBtn.addEventListener('click', async () => {
+        if (!selectedDateString || !specialDateName.value.trim()) {
+            alert('Ingresá un nombre para la fecha especial');
+            return;
+        }
+
+        try {
+            saveSpecialDateBtn.disabled = true;
+            saveSpecialDateBtn.textContent = 'Guardando...';
+
+            await FirebaseService.saveSpecialDate(selectedDateString, specialDateName.value.trim());
+
+            saveSpecialDateBtn.disabled = false;
+            saveSpecialDateBtn.textContent = 'Guardar';
+
+            alert('Fecha especial guardada correctamente');
+
+            // No necesitamos renderizar manualmente, el listener lo hará
+        } catch (error) {
+            console.error('Error al guardar fecha especial:', error);
+            alert('Error al guardar la fecha especial. Intentá de nuevo.');
+            saveSpecialDateBtn.disabled = false;
+            saveSpecialDateBtn.textContent = 'Guardar';
+        }
+    });
+
+    deleteSpecialDateBtn.addEventListener('click', async () => {
+        if (!selectedDateString) return;
+
+        if (!confirm('¿Estás seguro de eliminar esta fecha especial?')) return;
+
+        try {
+            deleteSpecialDateBtn.disabled = true;
+            deleteSpecialDateBtn.textContent = 'Eliminando...';
+
+            await FirebaseService.deleteSpecialDate(selectedDateString);
+
+            specialDateName.value = '';
+            deleteSpecialDateBtn.disabled = false;
+            deleteSpecialDateBtn.textContent = 'Borrar';
+
+            // No necesitamos renderizar manualmente, el listener lo hará
+        } catch (error) {
+            console.error('Error al eliminar fecha especial:', error);
+            alert('Error al eliminar la fecha especial. Intentá de nuevo.');
+            deleteSpecialDateBtn.disabled = false;
+            deleteSpecialDateBtn.textContent = 'Borrar';
+        }
+    });
+
+    // Renderizar calendario inicial
     renderAdminCalendar();
-}
-
-toggleBlockBtn.addEventListener('click', async () => {
-    if (!selectedDateString) return;
-    
-    try {
-        toggleBlockBtn.disabled = true;
-        toggleBlockBtn.textContent = 'Procesando...';
-        
-        await FirebaseService.toggleBlockDate(selectedDateString);
-        
-        toggleBlockBtn.disabled = false;
-        toggleBlockBtn.textContent = 'Bloquear / Desbloquear';
-        
-        // No necesitamos renderizar manualmente, el listener lo hará
-    } catch (error) {
-        console.error('Error al bloquear/desbloquear fecha:', error);
-        alert('Error al actualizar la fecha. Intentá de nuevo.');
-        toggleBlockBtn.disabled = false;
-        toggleBlockBtn.textContent = 'Bloquear / Desbloquear';
-    }
-});
-
-saveSpecialDateBtn.addEventListener('click', async () => {
-    if (!selectedDateString || !specialDateName.value.trim()) {
-        alert('Ingresá un nombre para la fecha especial');
-        return;
-    }
-    
-    try {
-        saveSpecialDateBtn.disabled = true;
-        saveSpecialDateBtn.textContent = 'Guardando...';
-        
-        await FirebaseService.saveSpecialDate(selectedDateString, specialDateName.value.trim());
-        
-        saveSpecialDateBtn.disabled = false;
-        saveSpecialDateBtn.textContent = 'Guardar';
-        
-        alert('Fecha especial guardada correctamente');
-        
-        // No necesitamos renderizar manualmente, el listener lo hará
-    } catch (error) {
-        console.error('Error al guardar fecha especial:', error);
-        alert('Error al guardar la fecha especial. Intentá de nuevo.');
-        saveSpecialDateBtn.disabled = false;
-        saveSpecialDateBtn.textContent = 'Guardar';
-    }
-});
-
-deleteSpecialDateBtn.addEventListener('click', async () => {
-    if (!selectedDateString) return;
-    
-    if (!confirm('¿Estás seguro de eliminar esta fecha especial?')) return;
-    
-    try {
-        deleteSpecialDateBtn.disabled = true;
-        deleteSpecialDateBtn.textContent = 'Eliminando...';
-        
-        await FirebaseService.deleteSpecialDate(selectedDateString);
-        
-        specialDateName.value = '';
-        deleteSpecialDateBtn.disabled = false;
-        deleteSpecialDateBtn.textContent = 'Borrar';
-        
-        // No necesitamos renderizar manualmente, el listener lo hará
-    } catch (error) {
-        console.error('Error al eliminar fecha especial:', error);
-        alert('Error al eliminar la fecha especial. Intentá de nuevo.');
-        deleteSpecialDateBtn.disabled = false;
-        deleteSpecialDateBtn.textContent = 'Borrar';
-    }
-});
-
-// Renderizar calendario inicial
-renderAdminCalendar();
 
     const newsTitle = document.getElementById('newsTitle');
     const newsDesc = document.getElementById('newsDesc');
@@ -787,7 +787,7 @@ renderAdminCalendar();
                 p.phone ? `${p.userName} - TEL: ${p.phone}` : p.userName
             ).join(', ');
             const playersText = playersList || 'Sin inscriptos todavía';
-            const dateText = t.date ? parseLocalDate(t.date).toLocaleDateString('es-ES') : 'Fecha a definir';
+            const dateText = t.date ? parseLocalDate(t.date.split('T')[0]).toLocaleDateString('es-ES') : 'Fecha a definir';
             const timeText = t.timeRange || 'Horario a definir';
             return `
                 <div class="card flex items-center justify-between p-4">

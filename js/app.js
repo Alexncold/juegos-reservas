@@ -15,7 +15,7 @@ unsubscribeAuth = FirebaseService.onAuthChange(async (user) => {
         if (user) {
             // Usuario autenticado en Firebase
             currentUser = user;
-            
+
             // Crear objeto userData desde Firebase user
             const userData = {
                 uid: user.uid,
@@ -24,10 +24,10 @@ unsubscribeAuth = FirebaseService.onAuthChange(async (user) => {
                 photoURL: user.photoURL,
                 avatar: user.displayName ? user.displayName.charAt(0).toUpperCase() : 'U'
             };
-            
+
             // Guardar en localStorage para UI rápida
             localStorage.setItem('user', JSON.stringify(userData));
-            
+
             // Inicializar app con datos reales de Firebase
             document.body.classList.remove('checking-auth');
             initializeApp(userData);
@@ -263,84 +263,94 @@ async function initializeApp(user) {
     renderCalendar();
     // note: renderTimeSlots y renderNews se llaman al recibir data del listener
 
-// Mobile UI updates and real-time listeners are already set up above
+    // Mobile UI updates and real-time listeners are already set up above
 
-// Event Listeners (con defensas por si faltan elementos)
-if (els.logoutBtn) {
-    els.logoutBtn.addEventListener('click', async () => {
-        await FirebaseService.logout();
-        window.location.href = 'login.html';
-    });
-}
-
-if (els.historyBtn) {
-    els.historyBtn.addEventListener('click', () => {
-        window.location.href = 'history.html';
-    });
-}
-
-// Listener para botón "Día de Club" (desktop)
-if (els.playFreeBtn) {
-    els.playFreeBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        openFreePlayModal();
-    });
-}
-
-// Función para abrir el modal de Free Play
-function openFreePlayModal() {
-    console.log('🎲 Free Play button clicked');
-    if (els.freePlayModal) {
-        els.freePlayModal.classList.add('active');
-        document.body.style.overflow = 'hidden';
-        console.log('✅ Modal opened');
-    } else {
-        console.error('❌ Free Play modal not found');
-    }
-}
-
-// Cerrar modal al hacer clic fuera del contenido o presionar ESC
-function handleModalOutsideClick(e) {
-    if (e.target.classList.contains('modal-overlay')) {
-        closeFreePlayModal();
-    }
-}
-
-function handleEscapeKey(e) {
-    if (e.key === 'Escape' && els.freePlayModal.classList.contains('active')) {
-        closeFreePlayModal();
-    }
-}
-
-// Inicializar event listeners para el modal
-if (els.freePlayModal) {
-    // Cerrar al hacer clic fuera del contenido
-    els.freePlayModal.addEventListener('click', handleModalOutsideClick);
-    
-    // Cerrar con tecla ESC
-    document.addEventListener('keydown', handleEscapeKey);
-    
-    // Limpiar event listeners al cerrar
-    const closeButton = document.getElementById('closeFreePlayModal');
-    if (closeButton) {
-        closeButton.addEventListener('click', (e) => {
-            e.stopPropagation();
-            closeFreePlayModal();
+    // Event Listeners (con defensas por si faltan elementos)
+    if (els.logoutBtn) {
+        els.logoutBtn.addEventListener('click', async () => {
+            await FirebaseService.logout();
+            window.location.href = 'login.html';
         });
     }
-}
 
-// Función para cerrar el modal de Free Play
-function closeFreePlayModal() {
-    if (els.freePlayModal) {
-        els.freePlayModal.classList.remove('active');
-        document.body.style.overflow = '';
+    // LISTENER PARA EL CERRO SESIÓN EN MÓVIL
+    const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
+    if (mobileLogoutBtn) {
+        mobileLogoutBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            await FirebaseService.logout();
+            window.location.href = 'login.html';
+        });
     }
-}
 
-// Notifications handling
-if (els.notificationsBtn) {
-    els.notificationsBtn.addEventListener('click', async (e) => {
+    if (els.historyBtn) {
+        els.historyBtn.addEventListener('click', () => {
+            window.location.href = 'history.html';
+        });
+    }
+
+    // Listener para botón "Día de Club" (desktop)
+    if (els.playFreeBtn) {
+        els.playFreeBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            openFreePlayModal();
+        });
+    }
+
+    // Función para abrir el modal de Free Play
+    function openFreePlayModal() {
+        console.log('🎲 Free Play button clicked');
+        if (els.freePlayModal) {
+            els.freePlayModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            console.log('✅ Modal opened');
+        } else {
+            console.error('❌ Free Play modal not found');
+        }
+    }
+
+    // Cerrar modal al hacer clic fuera del contenido o presionar ESC
+    function handleModalOutsideClick(e) {
+        if (e.target.classList.contains('modal-overlay')) {
+            closeFreePlayModal();
+        }
+    }
+
+    function handleEscapeKey(e) {
+        if (e.key === 'Escape' && els.freePlayModal.classList.contains('active')) {
+            closeFreePlayModal();
+        }
+    }
+
+    // Inicializar event listeners para el modal
+    if (els.freePlayModal) {
+        // Cerrar al hacer clic fuera del contenido
+        els.freePlayModal.addEventListener('click', handleModalOutsideClick);
+
+        // Cerrar con tecla ESC
+        document.addEventListener('keydown', handleEscapeKey);
+
+        // Limpiar event listeners al cerrar
+        const closeButton = document.getElementById('closeFreePlayModal');
+        if (closeButton) {
+            closeButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                closeFreePlayModal();
+            });
+        }
+    }
+
+    // Función para cerrar el modal de Free Play
+    function closeFreePlayModal() {
+        if (els.freePlayModal) {
+            els.freePlayModal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    }
+
+    // Notifications handling
+    if (els.notificationsBtn) {
+        els.notificationsBtn.addEventListener('click', async (e) => {
             const dropdown = document.getElementById('notificationsDropdown');
             if (!dropdown) return;
 
@@ -1089,7 +1099,7 @@ if (els.notificationsBtn) {
 
     function renderFreePlayTables(tables) {
         console.log('🎯 renderFreePlayTables called with:', tables);
-        
+
         if (!els.freePlayTablesContainer || !els.freePlayEmptyState) {
             console.error('❌ Required elements not found:', {
                 container: !!els.freePlayTablesContainer,
@@ -1097,7 +1107,7 @@ if (els.notificationsBtn) {
             });
             return;
         }
-        
+
         if (!tables || tables.length === 0) {
             console.log('ℹ️ No tables available, showing empty state');
             els.freePlayEmptyState.style.display = 'block';
@@ -1106,9 +1116,9 @@ if (els.notificationsBtn) {
         }
 
         console.log(`🔄 Rendering ${tables.length} free play tables`);
-        
+
         els.freePlayEmptyState.style.display = 'none';
-        els.freePlayTablesContainer.style.display = 'flex';
+        els.freePlayTablesContainer.style.display = 'grid'; // Enforce grid to match CSS, or null to let CSS handle it
         els.freePlayTablesContainer.innerHTML = '';
 
         tables.forEach((table) => {
@@ -1116,24 +1126,27 @@ if (els.notificationsBtn) {
             const spotsLeft = table.capacity - players.length;
             const isFull = spotsLeft <= 0;
             const isUserEnrolled = currentUser && players.some(p => p.userId === currentUser.uid);
-            
+
             // Formatear fecha si existe
             let dateText = 'Fecha a definir';
             if (table.date) {
                 try {
-                    const dateObj = new Date(table.date);
+                    // Extract YYYY-MM-DD from ISO string to avoid timezone issues
+                    const datePart = table.date.split('T')[0];
+                    const [year, month, day] = datePart.split('-').map(Number);
+                    const dateObj = new Date(year, month - 1, day);
                     if (!isNaN(dateObj.getTime())) {
-                        dateText = dateObj.toLocaleDateString('es-ES', { 
-                            weekday: 'long', 
-                            day: 'numeric', 
-                            month: 'long' 
+                        dateText = dateObj.toLocaleDateString('es-ES', {
+                            weekday: 'long',
+                            day: 'numeric',
+                            month: 'long'
                         });
                     }
                 } catch (e) {
                     console.warn('Error parsing date:', e);
                 }
             }
-            
+
             const timeText = table.timeRange || 'Horario a definir';
 
             const card = document.createElement('div');
@@ -1197,12 +1210,12 @@ if (els.notificationsBtn) {
                         data-table-id="${table.id}"
                         data-action="${isUserEnrolled ? 'leave' : 'join'}"
                         ${isFull && !isUserEnrolled ? 'disabled' : ''}>
-                        ${isUserEnrolled 
-                            ? 'Desanotarme' 
-                            : isFull 
-                                ? 'Mesa completa' 
-                                : `Anotarme (${spotsLeft} cupo${spotsLeft !== 1 ? 's' : ''} libre${spotsLeft !== 1 ? 's' : ''})` 
-                        }
+                        ${isUserEnrolled
+                    ? 'Desanotarme'
+                    : isFull
+                        ? 'Mesa completa'
+                        : `Anotarme (${spotsLeft} cupo${spotsLeft !== 1 ? 's' : ''} libre${spotsLeft !== 1 ? 's' : ''})`
+                }
                     </button>
                 </div>
             `;
@@ -1217,15 +1230,15 @@ if (els.notificationsBtn) {
     // Función para manejar clicks en botones de mesas libres
     function attachFreePlayButtonListeners() {
         const buttons = document.querySelectorAll('#freePlayTablesContainer button[data-table-id]');
-        
+
         buttons.forEach(button => {
             button.addEventListener('click', async (e) => {
                 e.preventDefault();
                 const tableId = button.dataset.tableId;
                 const action = button.dataset.action;
-                
+
                 console.log('🎯 Button clicked:', { tableId, action });
-                
+
                 // Verify currentUser is properly loaded
                 if (!currentUser || !currentUser.uid) {
                     console.error('User not properly authenticated:', { currentUser });
@@ -1242,122 +1255,95 @@ if (els.notificationsBtn) {
                     if (action === 'join') {
                         // Pedir número de teléfono si no lo tiene en el state
                         let phoneNumber = state.phoneNumber;
-                        
-                        // Ensure we have a valid user before proceeding
+
+                        // ✅ VALIDACIÓN MEJORADA
                         if (!currentUser || !currentUser.uid) {
                             throw new Error('No se pudo verificar tu usuario. Por favor, recarga la página.');
                         }
-                        
+
                         if (!phoneNumber) {
                             phoneNumber = prompt('Ingresá tu número de WhatsApp para que podamos contactarte (ej: 3624000000):');
-                            
-                            // Validar formato del número (al menos 8 dígitos, sin prefijo)
-                            const phoneRegex = /^\d{8,15}$/;
+
                             if (!phoneNumber) {
                                 button.disabled = false;
                                 button.textContent = originalText;
                                 return;
                             }
-                            
-                            // Limpiar cualquier carácter que no sea número
+
+                            // Limpiar y validar
                             phoneNumber = phoneNumber.replace(/\D/g, '');
-                            
-                            if (!phoneRegex.test(phoneNumber)) {
-                                alert('Por favor ingresá un número de teléfono válido (8-15 dígitos)');
+
+                            if (phoneNumber.length < 8) {
+                                alert('Por favor ingresá un número de teléfono válido (mínimo 8 dígitos)');
                                 button.disabled = false;
                                 button.textContent = originalText;
                                 return;
                             }
-                            
-                            // Guardar en state para futuras anotaciones
+
                             state.phoneNumber = phoneNumber;
-                            console.log('📱 Phone number saved to state:', phoneNumber);
                         }
 
-                        console.log('📝 Attempting to join table:', { 
-                            tableId, 
-                            user: currentUser ? currentUser.uid : 'no-user',
-                            hasPhone: !!phoneNumber 
+                        console.log('📝 Attempting to join table:', {
+                            tableId,
+                            userId: currentUser.uid,
+                            userName: currentUser.displayName || currentUser.email?.split('@')[0] || 'Usuario',
+                            phone: phoneNumber
                         });
 
-                        // Double-check user is still authenticated
-                        if (!currentUser || !currentUser.uid) {
-                            throw new Error('La sesión expiró. Por favor, recarga la página.');
+                        const result = await FirebaseService.addPlayerToFreePlayTable(
+                            tableId,
+                            {
+                                uid: currentUser.uid,
+                                name: currentUser.displayName || currentUser.email?.split('@')[0] || 'Usuario'
+                            },
+                            phoneNumber
+                        );
+
+                        console.log('📊 Join result:', result);
+
+                        if (!result.success) {
+                            throw new Error(result.error || 'Error al anotarse en la mesa');
                         }
 
-                        try {
-                            const result = await FirebaseService.addPlayerToFreePlayTable(
-                                tableId, 
-                                { 
-                                    uid: currentUser.uid, 
-                                    name: currentUser.displayName || currentUser.email.split('@')[0] 
-                                },
-                                phoneNumber
-                            );
+                        // Update UI immediately on success
+                        alert('¡Te anotaste correctamente en la mesa!');
 
-                            console.log('📊 Join result:', result);
+                        // Forzar recarga de datos
+                        const tables = await FirebaseService.getFreePlayTables();
+                        renderFreePlayTables(tables);
 
-                            if (!result.success) {
-                                throw new Error(result.error || 'Error al anotarse en la mesa');
-                            }
-                            
-                            // Update UI immediately on success
-                            button.textContent = 'Desanotarme';
-                            button.classList.remove('btn-primary');
-                            button.classList.add('btn-destructive');
-                            button.dataset.action = 'leave';
-                            
-                        } catch (error) {
-                            console.error('❌ Error adding player:', error);
-                            // Don't rethrow here, let the outer catch handle it
-                            throw error;
-                        }
                     } else if (action === 'leave') {
                         if (confirm('¿Estás seguro que querés desanotarte de esta mesa?')) {
-                            console.log('📝 Attempting to leave table:', { tableId, user: currentUser.uid });
-                            button.textContent = 'Procesando...';
+                            const success = await FirebaseService.removePlayerFromFreePlayTable(
+                                tableId,
+                                currentUser.uid
+                            );
 
-                            try {
-                                const success = await FirebaseService.removePlayerFromFreePlayTable(
-                                    tableId,
-                                    currentUser.uid
-                                );
-
-                                console.log('📊 Leave result:', success);
-
-                                if (!success) {
-                                    throw new Error('No se pudo desanotar');
-                                }
-
-                                // Update UI immediately on success
-                                button.textContent = 'Anotarme';
-                                button.classList.remove('btn-destructive');
-                                button.classList.add('btn-primary');
-                                button.dataset.action = 'join';
-                                
-                                // Show success message
-                                alert('Te has desanotado correctamente de la mesa.');
-                            } catch (error) {
-                                console.error('❌ Error removing player:', error);
-                                throw error; // Let the outer catch handle it
+                            if (!success) {
+                                throw new Error('No se pudo desanotar');
                             }
+
+                            alert('Te has desanotado correctamente de la mesa.');
+
+                            // Forzar recarga de datos
+                            const tables = await FirebaseService.getFreePlayTables();
+                            renderFreePlayTables(tables);
                         } else {
-                            // Usuario canceló
+                            // Usuario canceló la acción
                             button.disabled = false;
                             button.textContent = originalText;
                             return;
                         }
                     }
                 } catch (error) {
-                    console.error('❌ Error en acción de mesa libre:', error);
-                    console.error('❌ Error en acción de mesa libre:', error);
-                    alert(error.message || 'Ocurrió un error. Por favor intentá de nuevo.');
+                    console.error('❌ Error completo:', error);
+                    alert(`Error: ${error.message || 'Ocurrió un error. Por favor intentá de nuevo.'}`);
+
+                    // Restaurar botón en caso de error
+                    button.disabled = false;
+                    button.textContent = originalText;
                 } finally {
-                    // Forzar recarga de datos para asegurar consistencia
-                    const tables = await FirebaseService.getFreePlayTables();
-                    renderFreePlayTables(tables);
-                    
-                    // Restaurar estado del botón
+                    // Asegurarse de que el botón siempre se restaure
                     button.disabled = false;
                     button.textContent = originalText;
                 }

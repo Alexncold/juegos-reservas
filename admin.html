@@ -16,19 +16,21 @@
             top: 1rem;
             right: 1rem;
             left: auto;
-            z-index: 900; /* Reducido de 1000 a 900 para que esté detrás del menú */
+            z-index: 900;
+            /* Reducido de 1000 a 900 para que esté detrás del menú */
             background: none;
             border: none;
             padding: 0.5rem;
             cursor: pointer;
             transition: z-index 0.3s ease;
         }
-        
+
         /* Ocultar el botón cuando el menú está abierto */
         .mobile-menu-open .mobile-menu-btn {
-            z-index: 800; /* Asegurarse de que esté detrás del menú */
+            z-index: 800;
+            /* Asegurarse de que esté detrás del menú */
         }
-        
+
         .mobile-menu-btn .material-symbols-outlined {
             font-size: 28px;
             color: #1B203D;
@@ -78,8 +80,58 @@
 
             .admin-content {
                 padding: 5rem 1rem 2rem;
+                box-sizing: border-box;
             }
-            
+
+            /* Ensure tab contents fit within viewport */
+            .tab-content {
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            /* Ensure ALL cards fit within mobile viewport */
+            .card {
+                max-width: 100% !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+            }
+
+            /* Reduce card padding on mobile to fit content */
+            .card-content {
+                padding: 1rem !important;
+                box-sizing: border-box !important;
+                overflow-wrap: break-word;
+                word-wrap: break-word;
+            }
+
+            .card-header {
+                padding: 1rem !important;
+                box-sizing: border-box !important;
+                overflow-wrap: break-word;
+                word-wrap: break-word;
+            }
+
+            /* Ensure all inputs and textareas fit */
+            .input,
+            input[type="text"],
+            input[type="number"],
+            input[type="date"],
+            input[type="tel"],
+            textarea,
+            select {
+                max-width: 100% !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+            }
+
+            /* Ensure all buttons fit */
+            .btn {
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+            }
+
             /* Ajustes para los campos de fecha en móvil */
             .card-header .flex.gap-2 {
                 display: grid;
@@ -88,22 +140,46 @@
                 width: 100%;
                 padding-bottom: 0.5rem;
             }
-            
+
             .card-header .flex.gap-2 .input[type="date"] {
                 width: 100%;
                 min-width: 0;
             }
-            
+
             .card-header .flex.gap-2 label[for^="searchDate"] {
                 white-space: nowrap;
                 grid-row: 1;
                 margin-bottom: 0.25rem;
             }
-            
+
             .card-header .flex.gap-2 input[type="date"] {
                 grid-row: 2;
             }
-            
+
+            /* Specific fix for JS-generated Free Tables cards */
+            .free-tables-list .card {
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 1rem !important;
+            }
+
+            .free-tables-list .card>div {
+                width: 100% !important;
+            }
+
+            /* Make buttons full width in the card footers */
+            .free-tables-list .card .flex.gap-2 {
+                width: 100% !important;
+                display: grid !important;
+                grid-template-columns: 1fr 1fr;
+                gap: 0.5rem !important;
+            }
+
+            .free-tables-list .card .btn {
+                width: 100% !important;
+                justify-content: center !important;
+            }
+
             /* Estilos para el selector de estado */
             .card-header .flex.gap-2 label[for="searchStatus"],
             .card-header .flex.gap-2 #searchStatus {
@@ -111,22 +187,22 @@
                 width: 100%;
                 margin-top: 0.5rem;
             }
-            
+
             .card-header .flex.gap-2 label[for="searchStatus"] {
                 grid-row: 3;
                 margin-bottom: 0;
             }
-            
+
             .card-header .flex.gap-2 #searchStatus {
                 grid-row: 4;
             }
-            
+
             /* Asegurar que el contenedor principal siga siendo responsivo */
-            .card-header > .flex.flex-wrap {
+            .card-header>.flex.flex-wrap {
                 flex-direction: column;
                 gap: 1rem;
             }
-            
+
             /* Estilo para el botón limpiar */
             #clearReservationFiltersBtn {
                 margin-left: 0 !important;
@@ -181,11 +257,11 @@
             border: 1px solid #D6D8E1;
             border-radius: 6px;
         }
-        
+
         .nav-item.active .material-symbols-outlined {
             color: #6A718D;
         }
-        
+
         .nav-item.active span:not(.material-symbols-outlined) {
             font-weight: 600;
         }
@@ -259,26 +335,30 @@
         }
 
         /* Estilos para los botones de acción en desktop */
-        .card-header .flex-wrap > .btn {
+        .card-header .flex-wrap>.btn {
             margin-left: 12px;
-            height: 36px; /* Altura estándar para los botones */
+            height: 36px;
+            /* Altura estándar para los botones */
             display: inline-flex;
             align-items: center;
             justify-content: center;
         }
-        
+
         /* Asegurar que el botón de eliminar tenga el mismo tamaño que el de limpiar */
         #deleteSelectedReservationsBtn {
-            min-width: 100px; /* Ancho mínimo para mantener consistencia */
+            min-width: 100px;
+            /* Ancho mínimo para mantener consistencia */
         }
-        
+
         @media (max-width: 768px) {
+
             /* Estilos para móviles */
-            .card-header .flex-wrap > .btn {
+            .card-header .flex-wrap>.btn {
                 margin-left: 0;
                 width: 100%;
                 margin-top: 8px;
-                height: 40px; /* Altura un poco mayor para mejor usabilidad táctil */
+                height: 40px;
+                /* Altura un poco mayor para mejor usabilidad táctil */
             }
         }
     </style>
@@ -289,10 +369,10 @@
     <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Menú">
         <span class="material-symbols-outlined">menu</span>
     </button>
-    
+
     <!-- Overlay del menú móvil -->
     <div id="mobileMenuOverlay" class="mobile-menu-overlay"></div>
-    
+
     <div class="admin-layout">
         <aside id="sidebar" class="sidebar">
             <div class="flex items-center gap-2 mb-8 px-2">
@@ -302,33 +382,42 @@
 
             <nav>
                 <div class="nav-item active" data-tab="reservations">
-                    <span class="material-symbols-outlined" style="font-size: 1.1rem; vertical-align: middle; margin-right: 0.5rem;">event</span>
+                    <span class="material-symbols-outlined"
+                        style="font-size: 1.1rem; vertical-align: middle; margin-right: 0.5rem;">event</span>
                     <span>Reservas</span>
                 </div>
                 <div class="nav-item" data-tab="calendar">
-                    <span class="material-symbols-outlined" style="font-size: 1.1rem; vertical-align: middle; margin-right: 0.5rem;">edit_calendar</span>
+                    <span class="material-symbols-outlined"
+                        style="font-size: 1.1rem; vertical-align: middle; margin-right: 0.5rem;">edit_calendar</span>
                     <span>Calendario</span>
                 </div>
                 <div class="nav-item" data-tab="times">
-                    <span class="material-symbols-outlined" style="font-size: 1.1rem; vertical-align: middle; margin-right: 0.5rem;">nest_clock_farsight_analog</span>
+                    <span class="material-symbols-outlined"
+                        style="font-size: 1.1rem; vertical-align: middle; margin-right: 0.5rem;">nest_clock_farsight_analog</span>
                     <span>Horarios</span>
                 </div>
                 <div class="nav-item" data-tab="price">
-                    <span class="material-symbols-outlined" style="font-size: 1.1rem; vertical-align: middle; margin-right: 0.5rem;">attach_money</span>
+                    <span class="material-symbols-outlined"
+                        style="font-size: 1.1rem; vertical-align: middle; margin-right: 0.5rem;">attach_money</span>
                     <span>Precio</span>
                 </div>
                 <div class="nav-item" data-tab="news">
-                    <span class="material-symbols-outlined" style="font-size: 1.1rem; vertical-align: middle; margin-right: 0.5rem;">newsmode</span>
+                    <span class="material-symbols-outlined"
+                        style="font-size: 1.1rem; vertical-align: middle; margin-right: 0.5rem;">newsmode</span>
                     <span>Novedades</span>
                 </div>
                 <div class="nav-item" data-tab="free-tables">
-                    <span class="material-symbols-outlined" style="font-size: 1.1rem; vertical-align: middle; margin-right: 0.5rem;">card_membership</span>
+                    <span class="material-symbols-outlined"
+                        style="font-size: 1.1rem; vertical-align: middle; margin-right: 0.5rem;">card_membership</span>
                     <span>Día de Club</span>
                 </div>
-                
-                <div class="nav-item" style="margin-top: 1rem; border-top: 1px solid var(--border); padding-top: 1rem; margin-bottom: 1rem;"></div>
+
+                <div class="nav-item"
+                    style="margin-top: 1rem; border-top: 1px solid var(--border); padding-top: 1rem; margin-bottom: 1rem;">
+                </div>
                 <div class="nav-item" id="logoutBtn">
-                    <span class="material-symbols-outlined" style="font-size: 1.1rem; vertical-align: middle; margin-right: 0.5rem;">logout</span>
+                    <span class="material-symbols-outlined"
+                        style="font-size: 1.1rem; vertical-align: middle; margin-right: 0.5rem;">logout</span>
                     <span>Cerrar Sesión</span>
                 </div>
             </nav>
@@ -365,9 +454,8 @@
                                 <span class="material-symbols-outlined" style="font-size: 18px;">close_small</span>
                                 <span>Limpiar</span>
                             </button>
-                            <button id="deleteSelectedReservationsBtn" class="btn btn-delete-red" 
-                                style="display: flex; align-items: center; gap: 4px;"
-                                data-mobile-padding="true"
+                            <button id="deleteSelectedReservationsBtn" class="btn btn-delete-red"
+                                style="display: flex; align-items: center; gap: 4px;" data-mobile-padding="true"
                                 disabled>
                                 <span class="material-symbols-outlined" style="font-size: 18px;">delete</span>
                                 <span>Eliminar</span>
@@ -380,7 +468,8 @@
                                 <thead>
                                     <tr>
                                         <th style="width: 40px;">
-                                            <input type="checkbox" id="selectAllReservations" style="width: 16px; height: 16px; cursor: pointer;">
+                                            <input type="checkbox" id="selectAllReservations"
+                                                style="width: 16px; height: 16px; cursor: pointer;">
                                         </th>
                                         <th>Fecha</th>
                                         <th>Hora</th>
@@ -399,8 +488,12 @@
                                 </tbody>
                                 <tfoot>
                                     <tr>
-                                        <td colspan="9" style="text-align: left; font-weight: 600; padding: 12px 16px; background-color: #F6F7F9; border-top: 1px solid #e0e0e0;">Total recaudado:</td>
-                                        <td id="reservationsTotalAmount" style="font-weight: 700; padding: 12px 16px; background-color: #F6F7F9; border-top: 1px solid #e0e0e0;">$0</td>
+                                        <td colspan="9"
+                                            style="text-align: left; font-weight: 600; padding: 12px 16px; background-color: #F6F7F9; border-top: 1px solid #e0e0e0;">
+                                            Total recaudado:</td>
+                                        <td id="reservationsTotalAmount"
+                                            style="font-weight: 700; padding: 12px 16px; background-color: #F6F7F9; border-top: 1px solid #e0e0e0;">
+                                            $0</td>
                                         <td style="background-color: #F6F7F9; border-top: 1px solid #e0e0e0;"></td>
                                     </tr>
                                 </tfoot>
@@ -410,7 +503,8 @@
                                     <button id="prevPageBtn" class="pagination-btn" aria-label="Página anterior">
                                         <span class="material-symbols-outlined">chevron_left</span>
                                     </button>
-                                    <span id="currentPageDisplay" class="pagination-page" style="background-color: #EDEDF1 !important; border-color: #D6D8E1 !important; color: var(--foreground) !important; font-weight: 600;">1</span>
+                                    <span id="currentPageDisplay" class="pagination-page"
+                                        style="background-color: #EDEDF1 !important; border-color: #D6D8E1 !important; color: var(--foreground) !important; font-weight: 600;">1</span>
                                     <button id="nextPageBtn" class="pagination-btn" aria-label="Página siguiente">
                                         <span class="material-symbols-outlined">chevron_right</span>
                                     </button>
@@ -455,34 +549,34 @@
                         <!-- JS Injected -->
                     </div>
                 </div>
-                
+
                 <style>
                     .time-slots-container {
                         display: grid;
                         grid-template-columns: 1fr 1fr;
                         gap: 2rem;
                     }
-                    
+
                     .time-slots-list {
                         display: flex;
                         flex-direction: column;
                         gap: 1rem;
                     }
-                    
+
                     .time-slots-list .card {
                         margin-bottom: 0;
                     }
-                    
+
                     @media (max-width: 768px) {
                         .time-slots-container {
                             grid-template-columns: 1fr;
                         }
-                        
+
                         .time-slots-form {
                             order: 1;
                             margin-bottom: 2rem;
                         }
-                        
+
                         .time-slots-list {
                             order: 2;
                         }
@@ -543,47 +637,52 @@
                                         placeholder="Nombre (ej. Navidad)">
                                     <div class="special-date-actions flex gap-2">
                                         <button id="saveSpecialDateBtn" class="btn btn-primary flex-1">Guardar</button>
-                                        <button id="deleteSpecialDateBtn" class="btn btn-destructive flex-1">Borrar</button>
+                                        <button id="deleteSpecialDateBtn"
+                                            class="btn btn-destructive flex-1">Borrar</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                
+
                 <style>
                     .calendar-container {
                         display: flex;
                         gap: 2rem;
                         flex-wrap: wrap;
                     }
-                    
+
                     .calendar-grid-container {
-                        flex: 0 0 400px; /* Ancho fijo para desktop */
+                        flex: 0 0 400px;
+                        /* Ancho fijo para desktop */
                         min-width: 300px;
                         max-width: 100%;
                     }
-                    
+
                     .calendar-management-panel {
-                        flex: 0 0 350px; /* Ancho fijo para desktop */
+                        flex: 0 0 350px;
+                        /* Ancho fijo para desktop */
                         min-width: 300px;
                         max-width: 100%;
                     }
-                    
+
                     .special-date-actions {
-                        margin-top: 0.75rem; /* 12px de margen superior */
+                        margin-top: 0.75rem;
+                        /* 12px de margen superior */
                     }
-                    
+
                     @media (max-width: 768px) {
                         .calendar-container {
                             flex-direction: column;
                             align-items: stretch;
                             width: 100%;
                             max-width: 100%;
-                            padding: 0; /* Match other tabs card width (no extra side padding here) */
+                            padding: 0;
+                            /* Match other tabs card width (no extra side padding here) */
                             box-sizing: border-box;
                         }
-                        
+
                         .calendar-grid-container,
                         .calendar-management-panel {
                             order: 1;
@@ -592,12 +691,12 @@
                             min-width: auto !important;
                             flex: 0 0 auto !important;
                         }
-                        
+
                         .calendar-management-panel {
                             order: 2;
                             margin-top: 1.5rem;
                         }
-                        
+
                         .admin-calendar-card,
                         #dateManagementPanel {
                             width: 100%;
@@ -619,7 +718,8 @@
                         <div class="space-y-4">
                             <div>
                                 <label class="block text-sm font-bold" for="priceInput">Precio ($)</label>
-                                <input type="number" id="priceInput" class="input w-full mt-4 mb-4" min="1" step="100" placeholder="5000">
+                                <input type="number" id="priceInput" class="input w-full mt-4 mb-4" min="1" step="100"
+                                    placeholder="5000">
                             </div>
                             <button id="savePriceBtn" class="btn btn-primary w-full">Guardar Precio</button>
                         </div>
@@ -634,8 +734,10 @@
                     <div class="card-content">
                         <div class="space-y-4">
                             <div>
-                                <label class="block text-sm font-bold mb-1" for="paymentAlias">Alias para Transferencia</label>
-                                <input type="text" id="paymentAlias" class="input w-full mt-4 mb-4" placeholder="ALIAS.DE.EJEMPLO">
+                                <label class="block text-sm font-bold mb-1" for="paymentAlias">Alias para
+                                    Transferencia</label>
+                                <input type="text" id="paymentAlias" class="input w-full mt-4 mb-4"
+                                    placeholder="ALIAS.DE.EJEMPLO">
                             </div>
                             <button id="saveAliasBtn" class="btn btn-primary w-full">Guardar Alias</button>
                         </div>
@@ -668,24 +770,24 @@
                         <!-- JS Injected -->
                     </div>
                 </div>
-                
+
                 <style>
                     .news-container {
                         display: grid;
                         grid-template-columns: 1fr 1fr;
                         gap: 2rem;
                     }
-                    
+
                     @media (max-width: 768px) {
                         .news-container {
                             grid-template-columns: 1fr;
                         }
-                        
+
                         .news-form {
                             order: 1;
                             margin-bottom: 2rem;
                         }
-                        
+
                         .news-list {
                             order: 2;
                         }
@@ -714,15 +816,18 @@
                                 </div>
                                 <div>
                                     <label class="text-sm font-bold" for="freeTableCapacity">Cupos</label>
-                                    <input type="number" id="freeTableCapacity" class="input" min="1" max="10" placeholder="Ej: 4">
+                                    <input type="number" id="freeTableCapacity" class="input" min="1" max="10"
+                                        placeholder="Ej: 4">
                                 </div>
                                 <div>
                                     <label class="text-sm font-bold" for="freeTableDate">Fecha (opcional)</label>
                                     <input type="date" id="freeTableDate" class="input">
                                 </div>
                                 <div>
-                                    <label class="text-sm font-bold" for="freeTableTimeRange">Rango horario (opcional)</label>
-                                    <input type="text" id="freeTableTimeRange" class="input" placeholder="Ej: 17:00 - 19:00">
+                                    <label class="text-sm font-bold" for="freeTableTimeRange">Rango horario
+                                        (opcional)</label>
+                                    <input type="text" id="freeTableTimeRange" class="input"
+                                        placeholder="Ej: 17:00 - 19:00">
                                 </div>
                                 <button id="addFreeTableBtn" class="btn btn-primary">Agregar mesa</button>
                             </div>
@@ -734,62 +839,85 @@
                         <!-- JS Injected -->
                     </div>
                 </div>
-                
+
                 <style>
                     .free-tables-container {
                         display: grid;
                         grid-template-columns: 1fr 1fr;
                         gap: 2rem;
                     }
-                    
+
                     .free-tables-list {
                         display: flex;
                         flex-direction: column;
                         gap: 1rem;
                     }
-                    
+
                     @media (max-width: 768px) {
                         .free-tables-container {
                             grid-template-columns: 1fr;
+                            width: 100%;
+                            padding: 0;
+                            gap: 0;
+                            box-sizing: border-box;
+                            overflow-x: hidden;
                         }
-                        
+
                         .free-tables-form {
                             order: 1;
-                            margin-bottom: 2rem;
+                            margin-bottom: 1.5rem;
+                            width: 100%;
+                            box-sizing: border-box;
                         }
-                        
+
+                        .free-tables-form .card,
+                        .free-tables-list .card {
+                            width: 100%;
+                            box-sizing: border-box;
+                            margin: 0 0 1rem 0;
+                        }
+
+                        .free-tables-form .input,
+                        .free-tables-form .btn {
+                            width: 100%;
+                            box-sizing: border-box;
+                        }
+
                         .free-tables-list {
                             order: 2;
+                            width: 100%;
+                            box-sizing: border-box;
+                            gap: 1rem;
                         }
                     }
                 </style>
             </div>
-            
+
             <style>
                 .news-container {
                     display: grid;
                     grid-template-columns: 1fr 1fr;
                     gap: 2rem;
                 }
-                
+
                 .news-list .card {
                     margin-bottom: 1rem;
                 }
-                
+
                 @media (max-width: 768px) {
                     .news-container {
                         grid-template-columns: 1fr;
                     }
-                    
+
                     .news-form {
                         order: 1;
                         margin-bottom: 2rem;
                     }
-                    
+
                     .news-list {
                         order: 2;
                     }
-                    
+
                     .news-list .card {
                         margin-bottom: 1.25rem;
                     }
@@ -887,7 +1015,7 @@
         // Función para alternar el menú móvil
         function toggleMenu() {
             document.body.classList.toggle('mobile-menu-open');
-            
+
             // Cerrar el menú al hacer clic en un ítem del menú (solo en móviles)
             if (window.innerWidth <= 768) {
                 const navItems = document.querySelectorAll('.nav-item');
@@ -908,22 +1036,22 @@
         document.addEventListener('DOMContentLoaded', () => {
             const mobileMenuBtn = document.getElementById('mobileMenuBtn');
             const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
-            
+
             if (mobileMenuBtn) {
                 mobileMenuBtn.addEventListener('click', toggleMenu);
             }
-            
+
             if (mobileMenuOverlay) {
                 mobileMenuOverlay.addEventListener('click', closeMenu);
             }
-            
+
             // Cerrar menú al cambiar el tamaño de la ventana si se vuelve a escritorio
             window.addEventListener('resize', () => {
                 if (window.innerWidth > 768) {
                     document.body.classList.remove('mobile-menu-open');
                 }
             });
-            
+
             // Cerrar menú al hacer clic en un ítem del menú (solo en móviles)
             if (window.innerWidth <= 768) {
                 const navItems = document.querySelectorAll('.nav-item');

@@ -36,11 +36,18 @@ service cloud.firestore {
         get(/databases/$(database)/documents/admins/$(request.auth.token.email)).data.isActive == true;
     }
     
-    // Mesas de juego libre - lectura pública, escritura admin
+    // Mesas de juego libre - lectura pública, escritura controlada
     match /freePlayTables/{tableId} {
       allow read: if true;
-      allow write: if request.auth != null && 
+      // Solo admins pueden crear y eliminar mesas
+      allow create, delete: if request.auth != null && 
         get(/databases/$(database)/documents/admins/$(request.auth.token.email)).data.isActive == true;
+      // Admins pueden actualizar cualquier campo
+      allow update: if request.auth != null && 
+        get(/databases/$(database)/documents/admins/$(request.auth.token.email)).data.isActive == true;
+      // Usuarios autenticados pueden actualizar solo el campo 'players'
+      allow update: if request.auth != null && 
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['players']);
     }
     
     // Admins - solo lectura para verificación

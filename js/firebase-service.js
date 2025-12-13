@@ -655,6 +655,16 @@ const FirebaseService = {
 
   async addPlayerToFreePlayTable(tableId, user, phoneNumber) {
     try {
+      // ✅ AGREGAR VALIDACIÓN
+      if (!user || !user.uid || !user.name) {
+        console.error('❌ Invalid user object:', user);
+        return { success: false, error: 'Datos de usuario inválidos' };
+      }
+      
+      if (!phoneNumber || phoneNumber.trim().length < 8) {
+        return { success: false, error: 'Número de teléfono inválido' };
+      }
+
       const docRef = doc(db, 'freePlayTables', tableId);
       const docSnap = await getDoc(docRef);
 
@@ -679,14 +689,14 @@ const FirebaseService = {
       players.push({
         userId: user.uid,
         userName: user.name,
-        phone: phoneNumber
+        phone: phoneNumber.trim()
       });
 
-      await updateDoc(docRef, { players });
+      await setDoc(docRef, { players }, { merge: true });
       return { success: true };
     } catch (error) {
-      console.error('Error agregando jugador:', error);
-      return { success: false, error: 'Error al anotarse' };
+      console.error('❌ Error agregando jugador:', error);
+      return { success: false, error: error.message || 'Error al anotarse' };
     }
   },
 
@@ -702,7 +712,7 @@ const FirebaseService = {
       const table = docSnap.data();
       const players = (table.players || []).filter(p => p.userId !== userId);
 
-      await updateDoc(docRef, { players });
+      await setDoc(docRef, { players }, { merge: true });
       return true;
     } catch (error) {
       console.error('Error removiendo jugador:', error);

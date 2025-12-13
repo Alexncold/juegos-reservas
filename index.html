@@ -12,20 +12,42 @@
     <style>
         /* Bounce animation for casino icons with decreasing height */
         @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            12.5% { transform: translateY(-6px); }
-            25% { transform: translateY(0); }
-            37.5% { transform: translateY(-4px); }
-            50% { transform: translateY(0); }
-            62.5% { transform: translateY(-2px); }
-            75% { transform: translateY(0); }
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            12.5% {
+                transform: translateY(-6px);
+            }
+
+            25% {
+                transform: translateY(0);
+            }
+
+            37.5% {
+                transform: translateY(-4px);
+            }
+
+            50% {
+                transform: translateY(0);
+            }
+
+            62.5% {
+                transform: translateY(-2px);
+            }
+
+            75% {
+                transform: translateY(0);
+            }
         }
-        
+
         #playFreeBtn:hover .material-symbols-outlined {
             animation: bounce 1.6s ease-in-out 1;
             display: inline-block;
         }
-        
+
         /* Estilos para el menú hamburguesa */
         .mobile-menu-btn {
             display: none;
@@ -150,28 +172,28 @@
             .desktop-menu {
                 display: none !important;
             }
-            
+
             /* Mostrar notificaciones en móviles */
             #notificationsBtn {
                 display: flex !important;
             }
-            
+
             /* Añadir márgenes laterales en móviles */
             .container {
                 padding-left: 1rem !important;
                 padding-right: 1rem !important;
             }
-            
+
             .card {
                 margin-left: 0.5rem !important;
                 margin-right: 0.5rem !important;
                 width: auto !important;
             }
-            
+
             .reservation-grid {
                 gap: 1rem !important;
             }
-            
+
             .time-slots {
                 grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)) !important;
                 gap: 0.75rem !important;
@@ -187,7 +209,7 @@
             .mobile-menu {
                 display: none !important;
             }
-            
+
             /* Asegurar que el menú de escritorio sea visible */
             .desktop-menu {
                 display: flex !important;
@@ -233,14 +255,14 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        
+
         /* Estilos para centrar el selector de personas en móvil */
         @media (max-width: 767px) {
-            .card-content > .flex.items-center {
+            .card-content>.flex.items-center {
                 justify-content: center;
                 gap: 1.5rem !important;
             }
-            
+
             #peopleCount {
                 min-width: 24px;
                 text-align: center;
@@ -380,7 +402,8 @@
         }
 
         /* Estilos para los botones de navegación del calendario */
-        #prevMonth, #nextMonth {
+        #prevMonth,
+        #nextMonth {
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -397,7 +420,8 @@
             height: 2rem;
         }
 
-        #prevMonth:hover:not(:disabled), #nextMonth:hover:not(:disabled) {
+        #prevMonth:hover:not(:disabled),
+        #nextMonth:hover:not(:disabled) {
             color: var(--primary);
             background-color: rgba(0, 0, 0, 0.05);
         }
@@ -421,7 +445,7 @@
                 padding-top: 0.75rem !important;
                 padding-bottom: 0.75rem !important;
             }
-            
+
             #playFreeBtn:hover {
                 box-shadow: none !important;
             }
@@ -495,11 +519,12 @@
         #freePlayModal .modal-content {
             max-width: 600px;
             width: 90%;
+            box-sizing: border-box;
         }
 
         #freePlayTablesContainer {
-            display: flex;
-            flex-direction: column;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 1rem;
             width: 100%;
         }
@@ -553,14 +578,16 @@
         }
 
         #freePlayTablesContainer .btn-primary {
-            background-color: #4CAF50; /* Green color to match payment button */
+            background-color: #4CAF50;
+            /* Green color to match payment button */
             color: white;
             border: none;
             transition: background-color 0.3s, opacity 0.2s;
         }
-        
+
         #freePlayTablesContainer .btn-primary:hover:not(:disabled) {
-            background-color: #45a049; /* Slightly darker green on hover */
+            background-color: #45a049;
+            /* Slightly darker green on hover */
             opacity: 0.9;
         }
 
@@ -589,23 +616,41 @@
             }
         }
 
-        #freePlayTablesContainer {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 1rem;
-            width: 100%;
-        }
+
 
         @media (max-width: 768px) {
             #freePlayTablesContainer {
                 grid-template-columns: 1fr;
+                gap: 1rem;
             }
-            
+
             #freePlayModal .modal-content {
-                max-width: 100%;
-                width: 100%;
+                max-width: calc(100% - 2rem);
+                width: calc(100% - 2rem);
                 max-height: 90vh;
-                border-radius: 0;
+                border-radius: 8px;
+                padding: 1.5rem;
+                margin: 1rem;
+                box-sizing: border-box;
+            }
+
+            /* Improve card spacing on mobile */
+            #freePlayTablesContainer .card {
+                margin-bottom: 0;
+                box-sizing: border-box;
+            }
+
+            #freePlayTablesContainer .card-content {
+                padding: 1rem;
+                box-sizing: border-box;
+            }
+
+            /* Better button sizing on mobile */
+            #freePlayTablesContainer .btn {
+                padding: 0.75rem 1rem;
+                font-size: 0.875rem;
+                width: 100%;
+                box-sizing: border-box;
             }
         }
 
@@ -615,8 +660,9 @@
         }
 
         #freePlayTablesContainer .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            /* Hover effects removed */
+            transform: none;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
         #freePlayTablesContainer .card-content {
@@ -653,12 +699,12 @@
         }
 
         #freePlayTablesContainer .btn-primary {
-            background-color: #2563eb;
+            background-color: #1b203d;
             color: white;
         }
 
         #freePlayTablesContainer .btn-primary:hover:not(:disabled) {
-            background-color: #1d4ed8;
+            background-color: #2a325e;
         }
 
         #freePlayTablesContainer .btn-outline {
@@ -688,6 +734,23 @@
         @media (max-width: 640px) {
             #freePlayTablesContainer {
                 grid-template-columns: 1fr;
+            }
+
+            #freePlayModal .modal-content {
+                max-width: calc(100% - 1rem);
+                width: calc(100% - 1rem);
+                padding: 1rem;
+                margin: 0.5rem;
+                box-sizing: border-box;
+            }
+
+            #freePlayModal h2 {
+                font-size: 1.125rem;
+                margin-bottom: 1rem;
+            }
+
+            #freePlayModal p {
+                font-size: 0.875rem;
             }
         }
     </style>
@@ -720,7 +783,8 @@
                     height: 40px;
                     border-radius: 50%;
                     transition: background-color 0.2s;
-                " onmouseover="this.style.backgroundColor='rgba(0,0,0,0.05)'" onmouseout="this.style.backgroundColor='transparent'">
+                " onmouseover="this.style.backgroundColor='rgba(0,0,0,0.05)'"
+                    onmouseout="this.style.backgroundColor='transparent'">
                     <span id="notificationsIcon" class="material-symbols-outlined header-icon">notifications</span>
                 </button>
                 <div id="notificationsDropdown" class="card notification-dropdown hidden" style="
@@ -735,9 +799,12 @@
                 ">
                     <div class="notification-dropdown-title">Notificaciones</div>
                     <div class="card-content text-sm" style="background-color: #F6F7F9; padding: 1rem;">
-                        <div class="notification-message" style="display: flex; align-items: center; justify-content: space-between;">
-                            <span style="flex-grow: 1; word-wrap: break-word; padding-right: 8px;">Tu reserva ha sido confirmada!</span>
-                            <span id="notificationCheckIcon" class="material-symbols-outlined" style="flex-shrink: 0; cursor: pointer;">check</span>
+                        <div class="notification-message"
+                            style="display: flex; align-items: center; justify-content: space-between;">
+                            <span style="flex-grow: 1; word-wrap: break-word; padding-right: 8px;">Tu reserva ha sido
+                                confirmada!</span>
+                            <span id="notificationCheckIcon" class="material-symbols-outlined"
+                                style="flex-shrink: 0; cursor: pointer;">check</span>
                         </div>
                     </div>
                 </div>
@@ -746,11 +813,12 @@
             <!-- Botón centrado en el header (oculto en móviles) -->
             <button id="playFreeBtn" type="button" class="btn btn-outline"
                 style="display: none; align-items:center; gap:8px; padding:0.5rem 1.25rem; font-size:0.9rem; position:absolute; left:50%; transform:translateX(-50%); background-color:#EDEDF1; transition: all 0.2s; border-radius: 9999px;"
-                onmouseover="this.style.backgroundColor='#D6D8E1'"
-                onmouseout="this.style.backgroundColor='#EDEDF1'">
-                <span class="material-symbols-outlined header-icon" style="font-size: 18px; display: inline-block; transition: transform 0.3s ease;">casino</span>
+                onmouseover="this.style.backgroundColor='#D6D8E1'" onmouseout="this.style.backgroundColor='#EDEDF1'">
+                <span class="material-symbols-outlined header-icon"
+                    style="font-size: 18px; display: inline-block; transition: transform 0.3s ease;">casino</span>
                 <span style="font-weight: bold;">Día de Club</span>
-                <span class="material-symbols-outlined header-icon" style="font-size: 18px; display: inline-block; transition: transform 0.3s ease;">casino</span>
+                <span class="material-symbols-outlined header-icon"
+                    style="font-size: 18px; display: inline-block; transition: transform 0.3s ease;">casino</span>
             </button>
 
             <!-- Botón del menú hamburguesa -->
@@ -763,14 +831,16 @@
                 margin-left: 0;
                 border-radius: 50%;
                 transition: background-color 0.2s;
-            " onmouseover="this.style.backgroundColor='rgba(0,0,0,0.05)'" onmouseout="this.style.backgroundColor='transparent'">
+            " onmouseover="this.style.backgroundColor='rgba(0,0,0,0.05)'"
+                onmouseout="this.style.backgroundColor='transparent'">
                 <span class="material-symbols-outlined" style="font-size: 24px;">menu</span>
             </button>
 
             <!-- Menú de escritorio -->
             <div class="flex items-center gap-4 desktop-menu">
                 <div class="tooltip" style="display: flex; align-items: center;">
-                    <button id="historyBtn" type="button" style="background:none; border:none; padding:0; cursor:pointer; display:flex; align-items:center;">
+                    <button id="historyBtn" type="button"
+                        style="background:none; border:none; padding:0; cursor:pointer; display:flex; align-items:center;">
                         <span class="material-symbols-outlined header-icon">calendar_month</span>
                     </button>
                     <span class="tooltiptext">Historial de reservas</span>
@@ -795,7 +865,8 @@
         <!-- Sección de perfil del usuario -->
         <div style="background: white; padding: 1.5rem 1.5rem 0; border-bottom: 1px solid #e5e7eb;">
             <div class="flex items-center gap-4 mb-4">
-                <div id="mobileUserAvatar" style="width: 48px; height: 48px; border-radius: 50%; background-color: #E5E7EB; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 1.25rem; color: #4B5563;">
+                <div id="mobileUserAvatar"
+                    style="width: 48px; height: 48px; border-radius: 50%; background-color: #E5E7EB; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 1.25rem; color: #4B5563;">
                     U
                 </div>
                 <div>
@@ -806,17 +877,21 @@
         </div>
         <div class="mobile-menu-content" style="padding: 0;">
             <a href="#" class="mobile-menu-item" id="mobileHistoryBtn" style="margin-top: 0.5rem;">
-                <span class="material-symbols-outlined" style="margin-right: 0.75rem; color: #4B5563;">calendar_month</span>
+                <span class="material-symbols-outlined"
+                    style="margin-right: 0.75rem; color: #4B5563;">calendar_month</span>
                 Historial de reservas
             </a>
-            <a href="#" class="mobile-menu-item" id="mobilePlayFreeBtn" style="background-color: #EDEDF1; margin-bottom: 0.5rem; border-radius: 0;" onmouseover="this.style.backgroundColor='#D6D8E1'" onmouseout="this.style.backgroundColor='#EDEDF1'">
+            <a href="#" class="mobile-menu-item" id="mobilePlayFreeBtn"
+                style="background-color: #EDEDF1; margin-bottom: 0.5rem; border-radius: 0;"
+                onmouseover="this.style.backgroundColor='#D6D8E1'" onmouseout="this.style.backgroundColor='#EDEDF1'">
                 <span class="material-symbols-outlined" style="margin-right: 0.75rem; color: #4B5563;">casino</span>
                 Día de Club
             </a>
         </div>
 
         <div style="padding: 0.75rem 1rem; border-top: 1px solid #E5E7EB; background: white;">
-            <a href="#" class="mobile-menu-item" id="mobileLogoutBtn" style="color: #EF4444; margin: 0; padding: 0.5rem 0.5rem;">
+            <a href="#" class="mobile-menu-item" id="mobileLogoutBtn"
+                style="color: #EF4444; margin: 0; padding: 0.5rem 0.5rem;">
                 <span class="material-symbols-outlined" style="margin-right: 0.75rem;">logout</span>
                 Cerrar sesión
             </a>
@@ -895,7 +970,8 @@
                     </div>
                     <div class="card-content">
                         <div class="flex flex-col gap-2">
-                            <input type="tel" id="whatsappNumber" class="input" placeholder="+54 9 11 1234-5678" pattern="^\+?[0-9\s-]+" title="Por favor ingresa un número de teléfono válido">
+                            <input type="tel" id="whatsappNumber" class="input" placeholder="+54 9 11 1234-5678"
+                                pattern="^\+?[0-9\s-]+" title="Por favor ingresa un número de teléfono válido">
                         </div>
                     </div>
                 </div>
@@ -955,7 +1031,8 @@
 
                         <div class="flex justify-between items-center">
                             <span class="font-bold">Total</span>
-                            <span id="summaryTotal" class="font-bold text-xl" style="color: var(--primary);">$5000</span>
+                            <span id="summaryTotal" class="font-bold text-xl"
+                                style="color: var(--primary);">$5000</span>
                         </div>
 
                         <button id="payBtn" class="btn btn-primary btn-lg w-full">
@@ -981,16 +1058,16 @@
         <div class="modal-content">
             <button class="modal-close" id="closeFreePlayModal">&times;</button>
             <h2 class="text-xl font-bold mb-4">Día de Club - Mesas Disponibles</h2>
-            
-            <p class="text-muted text-sm mb-6">
+
+            <p class="text-muted text-sm" style="margin-bottom: 1.5rem;">
                 Seleccioná una mesa para anotarte y jugar gratis. Los cupos son limitados.
             </p>
-            
+
             <!-- Container para las tarjetas de mesas -->
             <div id="freePlayTablesContainer">
                 <!-- Las mesas se cargan dinámicamente desde Firebase -->
             </div>
-            
+
             <!-- Estado vacío -->
             <div id="freePlayEmptyState" class="hidden text-center py-12 px-4">
                 <span class="material-symbols-outlined text-gray-300 text-6xl mb-4">casino</span>
@@ -1007,7 +1084,7 @@
         <div class="modal-content" style="max-width: 500px;">
             <button class="modal-close" id="closeReservationModal">&times;</button>
             <h2 class="text-xl font-bold mb-4">Confirmar Reserva</h2>
-            
+
             <div class="space-y-4 mb-6">
                 <div class="flex justify-between">
                     <span class="text-muted">Fecha:</span>
@@ -1030,19 +1107,23 @@
                     <span id="modalTotal" class="font-bold text-lg"></span>
                 </div>
             </div>
-            
+
             <div class="mt-2 p-4 bg-gray-50 rounded-md">
                 <p class="text-sm text-center text-gray-700 mb-4">
-                    Transfiere <span id="modalTransferAmount" class="font-bold">$0</span> al siguiente alias y luego confirma tu reserva:
+                    Transfiere <span id="modalTransferAmount" class="font-bold">$0</span> al siguiente alias y luego
+                    confirma tu reserva:
                 </p>
                 <div class="mt-4 mb-2 flex items-center justify-center gap-2">
-                    <span id="aliasText" class="font-mono bg-white px-4 py-2 rounded-l border border-r-0 border-gray-200 text-primary-600 font-bold inline-block">ALIAS.DE.EJEMPLO</span>
-                    <button id="copyAliasBtn" class="bg-white hover:bg-gray-50 text-gray-600 px-3 py-2 rounded-r border border-l-0 border-gray-200 focus:outline-none focus:ring-1 focus:ring-primary-500 transition-colors" title="Copiar alias">
+                    <span id="aliasText"
+                        class="font-mono bg-white px-4 py-2 rounded-l border border-r-0 border-gray-200 text-primary-600 font-bold inline-block">ALIAS.DE.EJEMPLO</span>
+                    <button id="copyAliasBtn"
+                        class="bg-white hover:bg-gray-50 text-gray-600 px-3 py-2 rounded-r border border-l-0 border-gray-200 focus:outline-none focus:ring-1 focus:ring-primary-500 transition-colors"
+                        title="Copiar alias">
                         <span class="material-symbols-outlined" style="font-size: 18px;">content_copy</span>
                     </button>
                 </div>
             </div>
-            
+
             <div class="w-full mt-6" style="display: flex; justify-content: flex-end;">
                 <div class="flex" style="gap: 12px;">
                     <button id="cancelReservationBtn" class="btn btn-outline">Cancelar</button>
@@ -1056,7 +1137,7 @@
 
     <script>
         // Menú móvil
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const mobileMenuBtn = document.getElementById('mobileMenuBtn');
             const mobileMenu = document.getElementById('mobileMenu');
             const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
